@@ -1,22 +1,26 @@
+<!--
+PATH: DONATE.md
+PROJECT: NoXoZ AI Voice Control
+VERSION: v10.0.0
+AUTHOR: Bruno DELNOZ / @NoXoZ.be
+DATE: 2026-10-13
+PURPOSE: Optional project support and payment privacy
+-->
+
 # Support AI Voice Control by NoXoZ.be
 
 AI Voice Control is independently developed and maintained by **Bruno DELNOZ / NoXoZ.be**.
 
-If the extension saves you time and you want to support continued development, testing, maintenance, and future improvements, you can make a voluntary contribution via Stripe.
+If this extension helps you use ChatGPT hands-free and you would like to support future testing, maintenance and independent development, a small voluntary contribution is appreciated.
 
 ## Donate via Stripe
 
-**Stripe payment link:**
 https://donate.stripe.com/6oUdRbfsifpQ8DzbbWfQI00
 
-You can choose the amount you wish to contribute.
+The donation link opens **only when you explicitly click the support control**. Donations are optional and do not unlock additional features.
 
-> A contribution is voluntary. The extension opens Stripe only after an explicit click on the support button.
+Stripe handles the payment process directly. AI Voice Control does not process or store payment-card details.
 
-## Privacy
+Thank you for supporting independent software development. 💜
 
-Payment processing is handled by Stripe. AI Voice Control does not process or store payment card information.
-
-Thank you for supporting independent software development.
-
-— **NoXoZ.be**
+— **NoXoZ.be** · v10.0.0

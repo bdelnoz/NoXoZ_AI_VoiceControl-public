@@ -1,22 +1,37 @@
-# Security — AI Voice Control by NoXoZ.be v8.10.0
+<!--
+PATH: SECURITY.md
+PROJECT: NoXoZ AI Voice Control
+VERSION: v10.0.0
+AUTHOR: Bruno DELNOZ / @NoXoZ.be
+DATE: 2026-10-13
+PURPOSE: Public extension security and reporting policy
+-->
 
-> Independent project. Not affiliated with, endorsed by, sponsored by, or officially connected to OpenAI or Anthropic.
+# Security — NoXoZ AI Voice Control v10.0.0
 
-## Security model
+> Independent project; not affiliated with, endorsed by, sponsored by or officially connected to OpenAI or Anthropic.
 
-- Manifest V3 browser extension.
-- No NoXoZ telemetry backend.
-- No analytics SDK.
-- No automatic upload of chats, transcripts, microphone recordings, or diagnostics to NoXoZ.
-- Settings are stored locally through browser extension storage.
-- Browser-page automation is limited to the declared supported AI hosts.
+## Security architecture
 
-## Sensitive information
+- Chromium Manifest V3 extension with a local background service worker and content scripts.
+- Uses the declared browser permissions `storage`, `tabs`, `activeTab`, `scripting`, and `downloads`.
+- Interacts with the supported AI websites listed in the manifest, rather than arbitrary websites.
+- Does not contain a NoXoZ analytics SDK or backend for automatic telemetry.
+- Designed without automatic upload of conversations, dictation audio, transcripts or developer logs to NoXoZ.
+- Stores UI preferences and flow state in local browser extension storage.
 
-The extension interacts with the active AI chat interface. Users should treat their AI conversations, transcripts, attachments, and copied developer logs as potentially sensitive information.
+## Risks and responsibilities
 
-## Reporting a security issue
+- AutoSend can submit dictated text to the selected AI website. Confirm configuration before leaving it unattended.
+- The website's own dictation/Read Aloud services and their terms remain applicable.
+- Web UI markup changes can affect the extension's ability to find the correct action; a known intermittent current-assistant detection issue is documented in README.md.
+- Developer logs, chat text, attachments and account sessions can contain sensitive information. Share diagnostics only after review.
+- Use official project packages; inspect unpacked-extension permissions before loading.
 
-Report security issues directly to:
+## Reporting vulnerabilities
+
+Send a private report with the affected extension version, steps to reproduce and potential impact to:
 
 **Bruno DELNOZ** — bruno.delnoz@protonmail.com
+
+Avoid posting secrets, personal transcripts or exploit details publicly before coordination.

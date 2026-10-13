@@ -8,10 +8,203 @@
  * PROJECT      : NoXoZ_AI_VoiceControl
  * PROJECT ROOT : /mnt/data2_78g/Security/scripts/Projects_web/NoXoZ_AI_VoiceControl/
  * TARGET USAGE : Personal dual-mode ChatGPT / Claude modular voice-flow controller.
- * VERSION      : v8.9.4
- * DATE         : 2026-06-28 CEST
+ * VERSION      : v10.0.0
+ * DATE         : 2026-10-13
  * ==============================================================================
  * CHANGELOG:
+ *   v10.0.0 – 2026-10-13 – Public release package and documentation only; functional state machine unchanged from v9.0.7.
+ *   v9.0.7 – 2026-10-13 – Recover first-cycle Trigger ON from promoted DOM container; reload opens narrow movable Dev at top-left.
+ *   v9.0.6 – 2026-10-13 – Fix Trigger ON on mixed user/assistant DOM nesting; safely recover new answer from completed toolbar.
+ *   v9.0.5 – 2026-10-13 – Pin latest assistant AFTER the user turn; honor the pinned target during automatic Read Aloud.
+ *   v9.0.4 – 2026-10-13 – Detect NEW assistant after latest user with semantic fallback; pin newest verified reply for Trigger ON.
+ *   v9.0.3 – 2026-10-13 – Trigger ReadAloud OFF resumes after verified network completion even when DOM detection is stale.
+ *   v9.0.1 – 2026-10-13 – Read Aloud always resolves latest assistant message; stale targets cleared.
+ *   v9.0.0 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - AutoSend ON uses the explicit Send Dictated Message button when present;
+ *         if missing, finishes dictation, waits for the transcript and sends exactly once.
+ *       - A failed automatic Read Aloud start is latched for that response and
+ *         returns to PROMPT without retry storms or premature Dictate starts.
+ *       - Post-SEND completion requires a NEW assistant answer (not the old toolbar).
+ *       - Distinct Thinking/Writing and Read Aloud mutexes remain in place.
+ *       - Synchronized extension/runtime and Chromium manifest version to 9.0.0.
+ *   v8.12.25 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Restored the proven v8.12.18 TOS timer/microphone-monitor start logic.
+ *       - Dictate no longer starts the extension audio monitor prematurely; TOS waits for ChatGPT active-dictation UI exactly as in v8.12.18.
+ *       - Current Volume, voiceSeen and silence countdown again advance through the same validated v8.12.18 path.
+ *       - Current AutoSend OFF=Stop Dictation / ON=Send Dictated Message actions and response/ReadAloud mutex are preserved.
+ *   v8.12.23 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Regression (superseded by v8.12.25):
+ *       - Started the TOS microphone monitor immediately after Dictate, which could show live Current Volume while preventing the silence timeout path from progressing.
+ *   v8.12.22 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - PROMPT is the canonical start/return state; Full Flow activation preserves the independent NT TOS choice.
+ *       - TOS now branches directly: AutoSend OFF clicks Stop Dictation; AutoSend ON clicks Send Dictated Message.
+ *       - Any real ChatGPT send, including the normal manual Send button, enters the same Thinking/Writing response pipeline.
+ *       - End of Writing is gated by the current response exposing its Read Aloud control.
+ *       - Hard response/ReadAloud mutex blocks every Dictate/TOS monitor path until the response and optional playback are complete.
+ *   v8.12.21 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Read Aloud completion no longer forces New Transcription + TOS back ON.
+ *       - Every sent Full Flow prompt reaches assistant-response completion before Trigger ReadAloud / next-cycle decisions.
+ *       - New Transcription + TOS alone decides whether the microphone restarts or Full Flow waits on the normal prompt.
+ *   v8.12.20 – 2026-10-13 05:20 – Bruno DELNOZ / ChatGPT
+ *       Fixed / cleaned:
+ *       - Rebuilt directly from v8.12.18; v8.12.19 MutationObserver response detection removed.
+ *       - HAR-validated response completion follows the real /backend-api/f/conversation stream lifecycle.
+ *       - PerformanceResourceTiming provides a no-permission fallback if the MAIN-world fetch hook is unavailable.
+ *       - Automatic Trigger ReadAloud calls the exact same startPageReadAloudPlayback() routine as manual Read Aloud Last Message.
+ *       - Playback end follows the exact clicked slot: Read Aloud -> Stop -> Read Aloud, then starts the next transcription.
+ *       - Added requested let panelVisible = false; default.
+ *   v8.12.18 – 2026-10-13 04:35 – Bruno DELNOZ / ChatGPT
+ *       Fixed / cleaned:
+ *       - Replaced the accumulated semantic/prose/toolbar assistant-response arbitration with one canonical DOM-order detector shared by manual Read Aloud, AutoSend baseline and Full Flow.
+ *       - New prose-only assistant answers are detected even when older turns still expose semantic assistant attributes.
+ *       - Removed obsolete toolbar/read-aloud baseline state from response completion detection.
+ *       - Fallback assistant identity now uses response text plus assistant-turn ordinal, never global toolbar position.
+ *   v8.12.17 – 2026-10-13 04:22 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Runtime/UI version is synchronized with the 8.12.17 manifest so the loaded content-script build is unambiguous during tests.
+ *       - Reload Ext now schedules a page-level reload fallback after requesting chrome.runtime.reload(), ensuring the ChatGPT tab actually receives the freshly reloaded unpacked extension.
+ *       - Keeps the v8.12.16 assistant-response detection fix that no longer requires Read Aloud controls before recognizing a completed response.
+ *   v8.12.16 – 2026-10-13 04:13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - New assistant-response detection no longer requires the Read Aloud toolbar button to exist before a new response can be recognized.
+ *       - Response completion is now detected from the new assistant turn/key plus generation/settling state; Read Aloud readiness is handled afterward by the dedicated trigger gate.
+ *       - Prevents intermittent permanent Waiting assistant response when ChatGPT delays or omits the action-row controls.
+ *   v8.12.15 – 2026-10-13 04:07 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - AutoSend baseline now selects the newest assistant turn in DOM order across semantic and action-row detection instead of trusting the action row first.
+ *       - Post-send response detection uses the same newest-turn arbitration, preventing the previous assistant answer from being read as the new response.
+ *   v8.12.14 – 2026-10-13 04:02 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Trigger ReadAloud readiness no longer aborts solely because a stale global pageReadAloudActive flag remains true from the previous cycle.
+ *       - The pinned new assistant response local Read Aloud control now takes priority over stale global Stop state, preventing permanent Waiting ReadAloud.
+ *   v8.12.13 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Assistant response identity no longer changes when ChatGPT re-renders the same toolbar at a different global button index.
+ *       - AutoSend now snapshots the baseline key from the same latest action-row root used by post-send response detection, preventing an older semantic root from becoming the baseline.
+ *   v8.12.12 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Full Flow cannot trigger Read Aloud until a new post-send assistant action row and Read Aloud button exist.
+ *       - User prompt DOM changes can no longer be mistaken for a completed assistant response.
+ *   v8.12.11 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Assistant identity excludes every AI Voice Control button and is independent from User/Developer display mode.
+ *       - Toolbar-only responses are promoted to the nearest ancestor containing actual response text.
+ *       - The clicked response DOM root remains pinned throughout playback, preventing repeated clicks after reflow.
+ *   v8.12.10 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Assistant action rows are promoted to their complete conversation turn for stable response identity.
+ *       - Trigger readiness is checked only inside the pinned current response, preventing double clicks on older messages.
+ *   v8.12.9 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Added:
+ *       - Dedicated Clear Log button next to Copy Log and Export Log in Developer Mode.
+ *   v8.12.8 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Trigger ReadAloud ignores stale global Stop controls until the current assistant response has actually been clicked.
+ *       Added:
+ *       - Dedicated Copy Log button next to Export Log in Developer Mode.
+ *   v8.12.7 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Runtime status, transcription, ReadAloud and Developer log updates no longer auto-center or move the widget.
+ *       - The user-selected fixed position remains unchanged throughout Full Flow.
+ *   v8.12.6 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Trigger ReadAloud now uses the same newest semantic assistant-turn targeting as manual ReadAloud Last Message.
+ *       - New-response completion runs before any stale action-toolbar gate, preventing Full Flow from waiting forever.
+ *   v8.12.5 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Manual ReadAloud Last Message now pins the newest semantic assistant turn before looking for its controls.
+ *       - A still-undetected toolbar on the newest answer can no longer make the previous answer win.
+ *   v8.12.4 – 2026-10-10 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - New assistant detection follows the post-send response root/key instead of requiring an increasing global toolbar index.
+ *       - Assistant thinking/writing is reported separately from ReadAloud playback/end states.
+ *       Added:
+ *       - Dedicated Export Log button to the right of the Developer Mode title.
+ *   v8.12.3 – 2026-10-10 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - AutoSend records the last assistant action toolbar position before submission.
+ *       - Trigger ReadAloud refuses every pre-existing toolbar and waits for a newly appended assistant toolbar.
+ *       - The new toolbar root is pinned for playback, completion detection and loop restart.
+ *   v8.12.2 – 2026-10-10 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Trigger ReadAloud end is detected from the exact clicked slot returning from Stop to its saved speaker signature.
+ *       - Stale global Stop detection can no longer trap Full Flow in Waiting ReadAloud after playback ends.
+ *   v8.12.1 – 2026-10-10 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Trigger ReadAloud pins the completed new assistant response before clicking, preventing an older response from playing first.
+ *       - Full Flow waits for the composer controls to settle, reveals them and restarts New Transcription + TOS after playback.
+ *       Preserved:
+ *       - All validated v8.11.12 and v8.12.0 behavior.
+ *   v8.12.0 – 2026-10-10 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Full Flow now restarts New Transcription + TOS immediately after triggered ReadAloud finishes.
+ *       - Enabling AutoSend sends the retained transcript immediately when AutoSend OFF had paused the flow.
+ *       Preserved:
+ *       - All validated v8.11.12 ReadAloud, TOS, AutoSend pause, response detection and UI behavior.
+ *   v8.11.12 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Last-message ReadAloud is pinned to the newest assistant turn and cannot alternate to an older answer.
+ *       - Stop ReadAloud targets only the confirmed active playback control and can no longer start another answer.
+ *       - New Transcription + TOS OFF cancels recording/restart state and blocks every automatic microphone restart.
+ *       - AutoSend OFF is a hard wait after transcription until an explicit manual action.
+ *       - New assistant completion uses a stable post-send turn key and generation-state gate.
+ *       - Trigger ReadAloud OFF skips playback and resumes the microphone only after the new answer is complete.
+ *       - Trigger ReadAloud ON starts once, waits for confirmed completion, then resumes the microphone.
+ *   v8.11.10 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       Changed:
+ *       - Mini mode reuses the dynamic status element at the bottom above the version/footer.
+ *       - Mini status matches Export compact Ready-style appearance; no top MINI mode banner.
+ *       - Keep the original status below the header in Maxi and hidden in Button mode.
+ *       Preserved:
+ *       - All existing runtime operations, Read Aloud, transitions, UI controls and IDs.
+ *
+ *   v8.11.02 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Export-parity gray idle / blue hover / blue active state for Voice controls.
+ *       - Global NOT ACTIVATED defaults to gray, not blue; playback button reflects activity.
+ *       - Moved ChatGPT/Claude switch to Developer header to remove the extra footer-width action.
+ *       - Maxi footer hides duplicate version; Mini retains compact version like Export.
+ *       Preserved:
+ *       - All voice-flow, V2T, AutoSend, Read Aloud, reload and platform switching logic.
+ *
+ *   v8.11.01 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       Changed:
+ *       - Aligned Voice Control status placement with ChatGPT Export (below header).
+ *       - Matched ChatGPT Export v7.0.0 p25 UI geometry and palette in all modes: gray idle, blue active, red accents -> purple (CSS-only).
+ *       - Preserved two-line status messages, accessible buttons and all voice-flow operations.
+ *       - All selectors and previous JavaScript functions retained.
+ *
+ *   v8.11.00 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       Changed:
+ *       - Adopted Purple Neon theme in Maxi User, Maxi Dev, Mini and Button layouts.
+ *       - Developer Maxi default width aligned to the broad Export-family panel reference (552 px, remains resizable).
+ *       - Switched extension toolbar assets to a legible neon-purple V badge.
+ *       - Restyled donation pill with ivory background and purple text, outline and glow.
+ *       Preserved:
+ *       - Voice flow, silence/V2T, AutoSend, ReadAloud action-row 4th-button fallback,
+ *         controlled retry, stop flow, platform switching, resize and storage behavior.
+ *
+ *   v8.10.12 – 2026-10-03 08:43 CEST – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - Corrected the current ChatGPT Read Aloud fixed action slot from the fifth button to the fourth button.
+ *       - Assistant action-row detection now accepts rows with at least four buttons and resolves row[3].
+ *       - Manual and automatic ReadAloud start/stop confirmation keep the v8.10.11 controlled-retry logic on the corrected fourth slot.
+ *       Preserved:
+ *       - Legacy More-menu fallback and all unrelated VoiceControl behavior remain unchanged.
+ *
+ *   v8.10.11 – 2026-10-03 08:23 CEST – Bruno DELNOZ / ChatGPT
+ *       Fixed:
+ *       - ChatGPT current action-row Read Aloud now resolves the fifth assistant action button even when CSS keeps it transparent until hover.
+ *       - Manual ReadAloud Last enters active state only after ChatGPT confirms playback by exposing Stop or changing the fifth action icon.
+ *       - Automatic Trigger ReadAloud uses the same fifth-slot readiness and performs at most one controlled retry when playback does not start.
+ *       - Removed the recent-click-only false positive that could report ReadAloud active even when no Stop state appeared.
+ *       Preserved:
+ *       - Legacy More-menu fallback, Stop ReadAloud, AutoSend, TOS, UI modes, Claude profile, reload bridge, and existing workflow remain unchanged.
+ *
  *   v8.9.2 – 2026-06-30 – Bruno DELNOZ / ChatGPT
  *       Fixed:
  *       - Default Time of Silence restored to 3 seconds.
@@ -277,7 +470,13 @@
 (function initBraveDualAutoSendMini() {
     'use strict';
 
-    const VERSION = '8.10.0';
+    const VERSION = (() => {
+        try {
+            return chrome.runtime.getManifest().version || '10.0.0';
+        } catch (error) {
+            return '9.0.6';
+        }
+    })();
     const WIDGET_ID = 'cgas-mini-widget';
 
     function getExtensionApi() {
@@ -362,6 +561,8 @@
     const VOICE_START_LABEL_RE = /dictate|dictation|voice\s+input|voice\s+typing|speech\s+to\s+text|microphone|\bmic\b|start\s+(dictation|recording|transcription)|new\s+(dictation|transcription)|record\s+(audio|voice)|parler|dicter|dict[eé]e|micro|transcription\s+vocale|saisie\s+vocale/i;
     const VOICE_START_BAD_LABEL_RE = /stop|cancel|done|finish|complete|confirm|accept|check|send|envoyer|submit|attach|upload|file|image|search|tool|reason|model|read\s+aloud|lire|voice\s*mode|conversation|conversationnel|advanced\s+voice|live\s+voice|audio\s+mode|call|appel|close|dismiss|delete|remove|clear|settings|param[eè]tres/i;
 
+    let panelVisible = false;
+
     const state = {
         fullFlowEnabled: false,
         enabled: false,
@@ -371,7 +572,7 @@
         top: null,
         minimized: false,
         maximized: false,
-        visible: true,
+        visible: panelVisible,
         sendEnabled: true,
         readAloudEnabled: false,
         triggerReadAloudEnabled: false,
@@ -404,15 +605,37 @@
     let lastSentHash = '';
     let lastSendAt = 0;
     let monitorBusy = false;
+    // v9.0.0: prompt-centered response lifecycle. The current ChatGPT response
+    // is tracked by its real /backend-api/f/conversation stream, not by old message history.
+    let waitingForNewAssistantResponse = false;
+    let assistantResponseWaitStartedAt = 0;
+    let assistantResponseNetworkStarted = false;
+    let assistantResponseNetworkCompleted = false;
+    let assistantResponseNetworkCompletedAt = 0;
+    let assistantResponseTargetRoot = null;
+    let assistantResponseMissingTargetLogged = false;
+    let assistantResponseBaselineKey = '';
+    let assistantResponseBaselineText = '';
+    let assistantResponseBaselineReadAloudButton = null;
+    let triggerReadAloudFailureLatched = false;
+    let assistantResponsePerformanceStart = 0;
+    let assistantResponsePerformanceObserver = null;
+    let manualReadAloudSession = 0;
+    let manualReadAloudTargetRoot = null;
+    let manualReadAloudStartPending = false;
+    let fullFlowActivationSerial = 0;
     let autoStartArmed = false;
     let autoStartBusy = false;
-    let autoReadAloudClickedAt = 0;
-    let autoReadAloudSeenStop = false;
-    let autoReadAloudAttemptCount = 0;
-    let autoReadAloudMessageKey = '';
-    let autoReadAloudCompletedMessageKey = '';
-    let autoReadAloudLastMenuInspectAt = 0;
-    let autoReadAloudLastKnownMenuMode = '';
+    let lastReadAloudToggleButton = null;
+    let lastReadAloudToggleMessageKey = '';
+    let lastReadAloudToggleIdleSignature = '';
+    let lastReadAloudToggleActiveSignature = '';
+    let lastReadAloudToggleOffset = null;
+    let lastReadAloudToggleViewportPoint = null;
+    let lastReadAloudToggleClickedAt = 0;
+    let readAloudSlotFromEnd = null;
+    let readAloudSlotIdleSignature = '';
+    let readAloudSlotButtonCount = 0;
     let lastAutoStartAt = 0;
     let cycleDone = true;
     let vClickedThisCycle = false;
@@ -431,6 +654,10 @@
     let waitingUserInputAfterResponse = false;
     let skipReadAloudGateOnce = false;
     let draftTranscriptPending = false;
+    // Hard mutual exclusion: while a sent prompt is being answered, or while
+    // Read Aloud is starting/playing, Dictate/TOS must not run in parallel.
+    let responsePipelineActive = false;
+    let readAloudFlowInProgress = false;
 
     function now() {
         return Date.now();
@@ -569,7 +796,7 @@
         if (state.minimized) {
             state.maximized = false;
         }
-        state.visible = firstRunForVersion ? true : stored[STORAGE_KEYS.visible] !== false;
+        state.visible = firstRunForVersion ? panelVisible : stored[STORAGE_KEYS.visible] !== false;
         state.sendEnabled = firstRunForVersion ? true : stored[STORAGE_KEYS.sendEnabled] !== false;
         state.readAloudEnabled = firstRunForVersion ? false : Boolean(stored[STORAGE_KEYS.readAloudEnabled]);
         state.triggerReadAloudEnabled = firstRunForVersion ? true : Boolean(stored[STORAGE_KEYS.triggerReadAloudEnabled]);
@@ -587,6 +814,18 @@
         state.left = Number.isFinite(left) ? left : null;
         state.top = Number.isFinite(top) ? top : null;
 
+        /* 9.0.7: every Reload Ext / page bootstrap opens the draggable
+         * Developer Maxi at its minimum width, top-left. Flow toggles stay
+         * exactly as stored except on the existing first-version migration. */
+        state.dev = true;
+        state.minimized = false;
+        state.maximized = true;
+        state.visible = true;
+        state.left = 4;
+        state.top = 4;
+        state.maxiWidth = 300;
+        state.maxiHeight = 0; // natural height, limited by viewport CSS
+
         if (firstRunForVersion) {
             await chromeStorageSet({
                 [STORAGE_KEYS.version]: VERSION,
@@ -601,11 +840,23 @@
                 [STORAGE_KEYS.readAloudEnabled]: false,
                 [STORAGE_KEYS.triggerReadAloudEnabled]: true,
                 [STORAGE_KEYS.platformMode]: state.platformMode,
-                [STORAGE_KEYS.dev]: false,
-                [STORAGE_KEYS.maxiWidth]: '0',
-                [STORAGE_KEYS.maxiHeight]: '0'
+                [STORAGE_KEYS.dev]: true,
+                [STORAGE_KEYS.maxiWidth]: '300',
+                [STORAGE_KEYS.maxiHeight]: '0',
+                [STORAGE_KEYS.left]: '4',
+                [STORAGE_KEYS.top]: '4'
             });
         }
+        await chromeStorageSet({
+            [STORAGE_KEYS.dev]: true,
+            [STORAGE_KEYS.minimized]: false,
+            [STORAGE_KEYS.maximized]: true,
+            [STORAGE_KEYS.visible]: true,
+            [STORAGE_KEYS.left]: '4',
+            [STORAGE_KEYS.top]: '4',
+            [STORAGE_KEYS.maxiWidth]: '300',
+            [STORAGE_KEYS.maxiHeight]: '0'
+        });
     }
 
     async function saveStatePatch(patch) {
@@ -665,6 +916,10 @@
 
     function setStatus(message) {
         const text = String(message || 'Idle');
+        if (text !== developerPreviousStatus) {
+            developerPreviousStatus = text;
+            if (typeof logDeveloperEvent === 'function') logDeveloperEvent('STATUS', text);
+        }
         const status = document.getElementById('cgas-mini-status');
         if (!status) {
             lastStatusText = text;
@@ -700,6 +955,29 @@
             return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || '1') > 0;
         } catch (error) {
             console.log('[CGAS Mini] visibility check failed:', error.message);
+            return false;
+        }
+    }
+
+    function isElementLaidOut(el) {
+        try {
+            if (!el || el.nodeType !== Node.ELEMENT_NODE || typeof el.getBoundingClientRect !== 'function') {
+                return false;
+            }
+            const rect = el.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) {
+                return false;
+            }
+            const style = window.getComputedStyle(el);
+            /*
+             * ChatGPT can keep assistant action buttons visually hidden until hover
+             * (for example opacity: 0 or visibility: hidden). If the control still
+             * has real geometry, it remains a valid structural target for the
+             * programmatic click used by this extension.
+             */
+            return style.display !== 'none';
+        } catch (error) {
+            console.log('[CGAS Mini] layout visibility check failed:', error.message);
             return false;
         }
     }
@@ -1036,67 +1314,763 @@
 
     function readAloudActionText(mode) {
         return mode === 'stop'
-            ? /(^|\b)(stop\s+(read\s*aloud|reading|speaking|audio)|stop|arr[eê]ter|arr[eê]ter\s+la\s+lecture|interrompre)(\b|$)/i
+            ? /(^|\b)(stop\s+(read\s*aloud|reading|speaking|audio|playback|voice)|stop|pause|pause\s+(reading|audio|playback)|end\s+(reading|audio|playback)|cancel\s+(reading|audio|playback)|arr[eê]ter|arr[eê]ter\s+la\s+lecture|arr[eê]ter\s+l['’]audio|interrompre|mettre\s+en\s+pause)(\b|$)/i
             : /read\s*aloud|read\s+out|read\s+message|listen|speaker|speak\s+message|lire\s+(à|a)\s+voix\s+haute|lecture\s+audio|lire\s+le\s+message/i;
     }
 
-    function getVisibleAssistantMessageRoots() {
-        const roots = [];
-        const seen = new Set();
+    function getReadAloudActionDescriptor(el) {
+        if (!el) {
+            return '';
+        }
+        return normalizeSpace([
+            textOf(el),
+            el.getAttribute && el.getAttribute('aria-label'),
+            el.getAttribute && el.getAttribute('title'),
+            el.getAttribute && el.getAttribute('data-testid'),
+            el.getAttribute && el.getAttribute('data-state'),
+            el.getAttribute && el.getAttribute('aria-pressed'),
+            el.querySelector && Array.from(el.querySelectorAll('[aria-label],[title],[data-testid],[data-state],[aria-pressed]')).map((child) => [
+                child.getAttribute('aria-label'),
+                child.getAttribute('title'),
+                child.getAttribute('data-testid'),
+                child.getAttribute('data-state'),
+                child.getAttribute('aria-pressed')
+            ].filter(Boolean).join(' ')).join(' ')
+        ].filter(Boolean).join(' '));
+    }
 
-        for (const el of safeQueryAll(document, '[data-message-author-role="assistant"]')) {
-            const article = closestOrNull(el, 'article');
-            const turn = closestOrNull(el, '[data-testid*="conversation-turn"]');
-            const message = closestOrNull(el, '[data-message-id]');
-            const root = article || turn || message || el;
+    function scoreReadAloudActionCandidate(mode, el, contextRoot) {
+        if (!el || !isElementVisible(el) || closestOrNull(el, '#' + WIDGET_ID)) {
+            return -1;
+        }
 
-            if (!root || seen.has(root) || closestOrNull(root, '#' + WIDGET_ID)) {
-                continue;
+        const label = getReadAloudActionDescriptor(el);
+        const rect = el.getBoundingClientRect ? el.getBoundingClientRect() : { left: 0, right: 0, top: 0, bottom: 0, width: 0, height: 0 };
+        const contextRect = contextRoot && contextRoot.getBoundingClientRect ? contextRoot.getBoundingClientRect() : null;
+        const compact = rect.width >= 14 && rect.width <= 120 && rect.height >= 14 && rect.height <= 64;
+        const inOrNearContext = contextRect
+            ? rect.bottom >= contextRect.top - 24 && rect.top <= contextRect.bottom + 140 && rect.left >= contextRect.left - 40 && rect.right <= contextRect.right + 260
+            : true;
+        const clickable = closestOrNull(el, 'button,[role="button"],[role="menuitem"],[cmdk-item]') || el;
+        const hasSvg = Boolean(el.querySelector && el.querySelector('svg'));
+
+        let score = 0;
+        const stopRe = /(^|\b)(stop|pause|end|cancel|arr[eê]ter|interrompre)(\b|$)/i;
+        const stopLikeRe = /(read\s*aloud|reading|speaking|audio|playback|voice|speaker|lire\s+(à|a)\s+voix\s+haute|lecture\s+audio)/i;
+        const startRe = readAloudActionText('start');
+        const badStopRe = /(stop\s+recording|stop\s+dictation|voice\s+recording|advanced\s+voice|live\s+voice|stop\s+generating|arr[eê]ter\s+l['’]enregistrement|dict[eé]e)/i;
+
+        if (mode === 'stop') {
+            if (label && !badStopRe.test(label) && readAloudActionText('stop').test(label)) {
+                score += 900;
             }
-
-            seen.add(root);
-
-            if (isElementVisible(root)) {
-                roots.push(root);
+            if (label && !badStopRe.test(label) && stopRe.test(label) && stopLikeRe.test(label)) {
+                score += 650;
+            }
+            if (label && !badStopRe.test(label) && /(speaker|audio|voice|read)/i.test(label) && /(true|active|playing|pause|stop|open|on)/i.test(label)) {
+                score += 420;
+            }
+            if (label && !badStopRe.test(label) && /(speaker|audio|voice|read)/i.test(label) && compact) {
+                score += 160;
+            }
+        } else {
+            if (label && startRe.test(label)) {
+                score += 900;
+            }
+            if (label && /(speaker|audio|voice|read)/i.test(label) && compact) {
+                score += 160;
             }
         }
 
-        return roots;
+        if (hasSvg) {
+            score += 50;
+        }
+        if (compact) {
+            score += 35;
+        }
+        if (inOrNearContext) {
+            score += 180;
+        }
+        if (contextRect && rect.top >= contextRect.bottom - 120) {
+            score += 55;
+        }
+        if (!clickable || !isElementVisible(clickable)) {
+            return -1;
+        }
+        return score;
     }
 
-    function getLastAssistantMessageRoot() {
-        const roots = getVisibleAssistantMessageRoots();
 
-        if (roots.length === 0) {
+    function scoreGenericStopCandidate(el, contextRoot) {
+        if (!el || !isElementVisible(el) || closestOrNull(el, '#' + WIDGET_ID)) {
+            return -1;
+        }
+
+        const clickable = closestOrNull(el, 'button,[role="button"],[role="menuitem"],[cmdk-item]') || el;
+        if (!clickable || !isElementVisible(clickable) || closestOrNull(clickable, '#' + WIDGET_ID)) {
+            return -1;
+        }
+
+        const label = normalizeSpace([
+            textOf(clickable),
+            clickable.getAttribute && clickable.getAttribute('aria-label'),
+            clickable.getAttribute && clickable.getAttribute('title'),
+            clickable.getAttribute && clickable.getAttribute('data-testid'),
+            clickable.getAttribute && clickable.getAttribute('data-state'),
+            clickable.getAttribute && clickable.getAttribute('aria-pressed')
+        ].filter(Boolean).join(' '));
+
+        if (!label) {
+            return -1;
+        }
+
+        const stopRe = /(^|\b)(stop|pause|end|cancel|arr[eê]ter|interrompre)(\b|$)/i;
+        const stopLikeRe = /(read\s*aloud|reading|speaking|audio|playback|voice|speaker|lire\s+(à|a)\s+voix\s+haute|lecture\s+audio)/i;
+        const badStopRe = /(stop\s+recording|stop\s+dictation|voice\s+recording|advanced\s+voice|live\s+voice|stop\s+generating|arr[eê]ter\s+l['’]enregistrement|dict[eé]e|recording|g[eé]n[ée]ration|responding|r[eé]ponse)/i;
+        if (badStopRe.test(label) || !stopRe.test(label)) {
+            return -1;
+        }
+
+        const rect = clickable.getBoundingClientRect ? clickable.getBoundingClientRect() : { left: 0, right: 0, top: 0, bottom: 0, width: 0, height: 0 };
+        const contextRect = contextRoot && contextRoot.getBoundingClientRect ? contextRoot.getBoundingClientRect() : null;
+        const compact = rect.width >= 14 && rect.width <= 180 && rect.height >= 14 && rect.height <= 72;
+        const nearContext = contextRect
+            ? rect.bottom >= contextRect.top - 80 && rect.top <= contextRect.bottom + 260 && rect.left >= contextRect.left - 80 && rect.right <= contextRect.right + 420
+            : true;
+
+        let score = 500;
+        if (stopLikeRe.test(label)) {
+            score += 420;
+        }
+        if (/(aria-pressed|data-state)/i.test(label) || /(true|active|playing|pause|open|on)/i.test(label)) {
+            score += 120;
+        }
+        if (compact) {
+            score += 40;
+        }
+        if (nearContext) {
+            score += 180;
+        }
+        if (clickable.querySelector && clickable.querySelector('svg')) {
+            score += 35;
+        }
+        return score;
+    }
+
+    function findGenericStopButton(contextRoot) {
+        const selectors = [
+            'button',
+            '[role="button"]',
+            '[role="menuitem"]',
+            '[cmdk-item]',
+            '[aria-label]',
+            '[title]'
+        ];
+        const candidates = [];
+        const seen = new Set();
+
+        for (const selector of selectors) {
+            for (const el of safeQueryAll(document, selector)) {
+                const clickable = closestOrNull(el, 'button,[role="button"],[role="menuitem"],[cmdk-item]') || el;
+                if (!clickable || seen.has(clickable)) {
+                    continue;
+                }
+                seen.add(clickable);
+
+                const score = scoreGenericStopCandidate(clickable, contextRoot);
+                if (score >= 500) {
+                    candidates.push({ clickable, score });
+                }
+            }
+        }
+
+        if (!candidates.length) {
             return null;
         }
 
-        const visibleInViewport = roots
-            .map((root, index) => {
-                const rect = root.getBoundingClientRect();
-                return { root, index, rect };
-            })
-            .filter((item) => item.rect.bottom > 0 && item.rect.top < window.innerHeight);
+        candidates.sort((a, b) => b.score - a.score);
+        return candidates[0].clickable;
+    }
 
-        const candidates = visibleInViewport.length > 0
-            ? visibleInViewport
-            : roots.map((root, index) => ({ root, index, rect: root.getBoundingClientRect() }));
+    function collectAssistantActionButtons(messageRoot, includeTransparent) {
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        if (!root || !root.getBoundingClientRect) {
+            return [];
+        }
 
-        candidates.sort((a, b) => {
-            if (b.rect.bottom !== a.rect.bottom) {
-                return b.rect.bottom - a.rect.bottom;
+        let rootRect;
+        try {
+            rootRect = root.getBoundingClientRect();
+        } catch (error) {
+            return [];
+        }
+
+        const visibilityCheck = includeTransparent ? isElementLaidOut : isElementVisible;
+        const seen = new Set();
+        const buttons = [];
+        for (const button of safeQueryAll(root, 'button,[role="button"]')) {
+            if (!button || seen.has(button) || !visibilityCheck(button) || closestOrNull(button, '#' + WIDGET_ID)) {
+                continue;
             }
-            if (b.rect.top !== a.rect.top) {
-                return b.rect.top - a.rect.top;
+            seen.add(button);
+            const rect = button.getBoundingClientRect();
+            const compact = rect.width >= 14 && rect.width <= 88 && rect.height >= 14 && rect.height <= 64;
+            const nearActionRow = rect.top >= rootRect.bottom - 155 && rect.bottom <= rootRect.bottom + 90;
+            if (!compact || !nearActionRow) {
+                continue;
             }
-            return b.index - a.index;
+            buttons.push({ button, rect });
+        }
+
+        buttons.sort((a, b) => {
+            if (Math.abs(a.rect.top - b.rect.top) > 12) {
+                return a.rect.top - b.rect.top;
+            }
+            return a.rect.left - b.rect.left;
+        });
+        return buttons.map((item) => item.button);
+    }
+
+    function collectAssistantBottomActionRowButtons(root) {
+        if (!root) {
+            return [];
+        }
+        const candidates = collectAssistantActionButtons(root, true).map((button) => {
+            const rect = button.getBoundingClientRect();
+            return {
+                button,
+                rect,
+                centerY: rect.top + (rect.height / 2)
+            };
         });
 
-        return candidates[0].root;
+        if (candidates.length < 5) {
+            return [];
+        }
+
+        const rows = [];
+        for (const candidate of candidates) {
+            let row = rows.find((item) => Math.abs(item.centerY - candidate.centerY) <= 10);
+            if (!row) {
+                row = { centerY: candidate.centerY, items: [] };
+                rows.push(row);
+            }
+            row.items.push(candidate);
+            row.centerY = row.items.reduce((sum, item) => sum + item.centerY, 0) / row.items.length;
+        }
+
+        const usableRows = rows.filter((row) => row.items.length >= 4);
+        if (!usableRows.length) {
+            return [];
+        }
+
+        usableRows.sort((a, b) => {
+            if (b.items.length !== a.items.length) {
+                return b.items.length - a.items.length;
+            }
+            return b.centerY - a.centerY;
+        });
+
+        return usableRows[0].items
+            .sort((a, b) => a.rect.left - b.rect.left)
+            .map((item) => item.button);
+    }
+
+    function getFixedReadAloudSlotButton(messageRoot) {
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        if (!root) {
+            return null;
+        }
+        const row = collectAssistantBottomActionRowButtons(root);
+        // Current ChatGPT action row: Read Aloud is the FIFTH control (index 4).
+        return row.length >= 5 ? row[4] : null;
+    }
+
+    function learnFixedReadAloudIdleSignature(excludeRoot) {
+        const roots = getAssistantMessageRoots();
+        for (let i = roots.length - 1; i >= 0; i -= 1) {
+            const root = roots[i];
+            if (excludeRoot && root === excludeRoot) {
+                continue;
+            }
+            const button = getFixedReadAloudSlotButton(root);
+            if (!button) {
+                continue;
+            }
+            const descriptor = getReadAloudActionDescriptor(button);
+            if (readAloudActionText('start').test(descriptor)) {
+                const signature = readAloudToggleSignature(button);
+                if (signature) {
+                    readAloudSlotIdleSignature = signature;
+                    return signature;
+                }
+            }
+        }
+        return readAloudSlotIdleSignature || '';
+    }
+
+    function fixedReadAloudSlotIsActive(messageRoot) {
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        const button = getFixedReadAloudSlotButton(root);
+        if (!button) {
+            return false;
+        }
+
+        const descriptor = getReadAloudActionDescriptor(button);
+        if (readAloudActionText('stop').test(descriptor)) {
+            return true;
+        }
+        if (readAloudActionText('start').test(descriptor)) {
+            return false;
+        }
+
+        const idleSignature = readAloudSlotIdleSignature || learnFixedReadAloudIdleSignature(root);
+        const currentSignature = readAloudToggleSignature(button);
+        return Boolean(idleSignature && currentSignature && currentSignature !== idleSignature);
+    }
+
+    function rememberReadAloudSlot(button, messageRoot) {
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        if (!root || !button) {
+            return;
+        }
+        const clickable = closestOrNull(button, 'button,[role="button"]') || button;
+        const buttons = collectAssistantActionButtons(root, true);
+        const index = buttons.indexOf(clickable);
+        if (index < 0 || buttons.length < 3) {
+            return;
+        }
+        readAloudSlotFromEnd = buttons.length - index;
+        readAloudSlotButtonCount = buttons.length;
+        readAloudSlotIdleSignature = readAloudToggleSignature(clickable);
+    }
+
+    function learnReadAloudSlotFromIdleMessages() {
+        const roots = getAssistantMessageRoots();
+        for (let i = roots.length - 1; i >= 0; i -= 1) {
+            const root = roots[i];
+            const start = findReadAloudActionCandidate('start', root);
+            if (!start) {
+                continue;
+            }
+            rememberReadAloudSlot(start, root);
+            if (readAloudSlotFromEnd) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function findActiveReadAloudToggleBySlot() {
+        if (!readAloudSlotFromEnd) {
+            learnReadAloudSlotFromIdleMessages();
+        }
+        if (!readAloudSlotFromEnd) {
+            return null;
+        }
+
+        const roots = getAssistantMessageRoots();
+        const candidates = [];
+        for (let i = roots.length - 1; i >= 0; i -= 1) {
+            const root = roots[i];
+            const buttons = collectAssistantActionButtons(root, true);
+            if (buttons.length < readAloudSlotFromEnd) {
+                continue;
+            }
+            const index = buttons.length - readAloudSlotFromEnd;
+            const button = buttons[index];
+            if (!button || !isElementLaidOut(button)) {
+                continue;
+            }
+
+            const signature = readAloudToggleSignature(button);
+            const descriptor = getReadAloudActionDescriptor(button);
+            const stillIdle = readAloudActionText('start').test(descriptor);
+            const changedFromIdle = Boolean(readAloudSlotIdleSignature && signature && signature !== readAloudSlotIdleSignature);
+            const countDistance = readAloudSlotButtonCount ? Math.abs(buttons.length - readAloudSlotButtonCount) : 0;
+
+            if (!stillIdle && (changedFromIdle || /stop|pause|arr[eê]ter/i.test(descriptor))) {
+                candidates.push({ button, score: 1000 - (countDistance * 25) + i });
+            }
+        }
+
+        if (!candidates.length) {
+            return null;
+        }
+        candidates.sort((a, b) => b.score - a.score);
+        return candidates[0].button;
+    }
+
+    function readAloudToggleSignature(button) {
+        if (!button) {
+            return '';
+        }
+        const svgBits = button.querySelectorAll
+            ? Array.from(button.querySelectorAll('svg,path,rect,circle,polygon,polyline,line')).map((node) => [
+                node.tagName || '',
+                node.getAttribute && node.getAttribute('d'),
+                node.getAttribute && node.getAttribute('points'),
+                node.getAttribute && node.getAttribute('x'),
+                node.getAttribute && node.getAttribute('y'),
+                node.getAttribute && node.getAttribute('width'),
+                node.getAttribute && node.getAttribute('height')
+            ].filter(Boolean).join(':')).join('|')
+            : '';
+        const stateBits = normalizeSpace([
+            button.getAttribute && button.getAttribute('aria-label'),
+            button.getAttribute && button.getAttribute('title'),
+            button.getAttribute && button.getAttribute('data-testid'),
+            button.getAttribute && button.getAttribute('data-state'),
+            button.getAttribute && button.getAttribute('aria-pressed'),
+            button.querySelector && Array.from(button.querySelectorAll('[aria-label],[title],[data-testid],[data-state],[aria-pressed]')).map((child) => [
+                child.getAttribute('aria-label'),
+                child.getAttribute('title'),
+                child.getAttribute('data-testid'),
+                child.getAttribute('data-state'),
+                child.getAttribute('aria-pressed')
+            ].filter(Boolean).join(' ')).join(' ')
+        ].filter(Boolean).join(' '));
+
+        /*
+         * Do not include className/textOf() in this signature: ChatGPT changes
+         * hover classes without changing the Read Aloud/Stop control itself.
+         */
+        if (!stateBits && !svgBits) {
+            return '';
+        }
+        return hashText(normalizeSpace([stateBits, svgBits].filter(Boolean).join(' ')));
+    }
+
+    function rememberReadAloudToggle(button, messageRoot) {
+        if (!button) {
+            return;
+        }
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        const clickable = closestOrNull(button, 'button,[role="button"]') || button;
+        if (!clickable || !isElementLaidOut(clickable) || closestOrNull(clickable, '#' + WIDGET_ID)) {
+            return;
+        }
+
+        lastReadAloudToggleButton = clickable;
+        rememberReadAloudSlot(clickable, root);
+        lastReadAloudToggleMessageKey = getAssistantMessageKey(root);
+        lastReadAloudToggleIdleSignature = readAloudToggleSignature(clickable);
+        lastReadAloudToggleActiveSignature = '';
+        lastReadAloudToggleClickedAt = now();
+
+        try {
+            const buttonRect = clickable.getBoundingClientRect();
+            const rootRect = root && root.getBoundingClientRect ? root.getBoundingClientRect() : null;
+            lastReadAloudToggleOffset = rootRect ? {
+                x: buttonRect.left - rootRect.left,
+                y: buttonRect.top - rootRect.top,
+                width: buttonRect.width,
+                height: buttonRect.height
+            } : null;
+            lastReadAloudToggleViewportPoint = {
+                x: buttonRect.left + (buttonRect.width / 2),
+                y: buttonRect.top + (buttonRect.height / 2)
+            };
+        } catch (error) {
+            lastReadAloudToggleOffset = null;
+            lastReadAloudToggleViewportPoint = null;
+        }
+
+        window.setTimeout(() => {
+            const current = resolveRememberedReadAloudToggle(root);
+            if (!current) {
+                return;
+            }
+            const signature = readAloudToggleSignature(current);
+            if (signature && signature !== lastReadAloudToggleIdleSignature) {
+                lastReadAloudToggleActiveSignature = signature;
+            }
+        }, 320);
+    }
+
+    function clickableFromPoint(x, y) {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+            return null;
+        }
+        if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) {
+            return null;
+        }
+        let el = null;
+        try {
+            el = document.elementFromPoint(x, y);
+        } catch (error) {
+            return null;
+        }
+        const clickable = closestOrNull(el, 'button,[role="button"],[role="menuitem"],[cmdk-item]') || el;
+        if (!clickable || !isElementLaidOut(clickable) || closestOrNull(clickable, '#' + WIDGET_ID)) {
+            return null;
+        }
+        return clickable;
+    }
+
+    function resolveRememberedReadAloudToggle(messageRoot) {
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        if (!root) {
+            return null;
+        }
+
+        const rootKey = getAssistantMessageKey(root);
+        if (lastReadAloudToggleMessageKey && rootKey && lastReadAloudToggleMessageKey !== rootKey) {
+            return null;
+        }
+
+        /*
+         * ChatGPT turns the Read Aloud icon into the Stop square IN THE SAME
+         * SCREEN POSITION. Resolve the CURRENT element at that point first.
+         * This intentionally beats a stale saved DOM reference.
+         */
+        if (lastReadAloudToggleOffset) {
+            try {
+                const rootRect = root.getBoundingClientRect();
+                const targetX = rootRect.left + lastReadAloudToggleOffset.x + (lastReadAloudToggleOffset.width / 2);
+                const targetY = rootRect.top + lastReadAloudToggleOffset.y + (lastReadAloudToggleOffset.height / 2);
+                const pointButton = clickableFromPoint(targetX, targetY);
+                if (pointButton) {
+                    lastReadAloudToggleButton = pointButton;
+                    lastReadAloudToggleViewportPoint = { x: targetX, y: targetY };
+                    return pointButton;
+                }
+            } catch (error) {
+                // Continue with the stored screen point and structural fallbacks.
+            }
+        }
+
+        /* Same viewport point fallback when the message wrapper was replaced. */
+        if (lastReadAloudToggleViewportPoint) {
+            const pointButton = clickableFromPoint(lastReadAloudToggleViewportPoint.x, lastReadAloudToggleViewportPoint.y);
+            if (pointButton) {
+                lastReadAloudToggleButton = pointButton;
+                return pointButton;
+            }
+        }
+
+        /* Only use the old DOM node after current-position hit testing. */
+        if (lastReadAloudToggleButton && lastReadAloudToggleButton.isConnected && isElementLaidOut(lastReadAloudToggleButton)) {
+            return lastReadAloudToggleButton;
+        }
+
+        if (!lastReadAloudToggleOffset) {
+            return null;
+        }
+
+        let rootRect;
+        try {
+            rootRect = root.getBoundingClientRect();
+        } catch (error) {
+            return null;
+        }
+        const targetX = rootRect.left + lastReadAloudToggleOffset.x + (lastReadAloudToggleOffset.width / 2);
+        const targetY = rootRect.top + lastReadAloudToggleOffset.y + (lastReadAloudToggleOffset.height / 2);
+        const candidates = [];
+        for (const button of safeQueryAll(root, 'button,[role="button"]')) {
+            if (!button || !isElementLaidOut(button) || closestOrNull(button, '#' + WIDGET_ID)) {
+                continue;
+            }
+            const rect = button.getBoundingClientRect();
+            const compact = rect.width >= 14 && rect.width <= 90 && rect.height >= 14 && rect.height <= 64;
+            if (!compact) {
+                continue;
+            }
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const distance = Math.hypot(cx - targetX, cy - targetY);
+            if (distance <= 42) {
+                candidates.push({ button, distance });
+            }
+        }
+        if (!candidates.length) {
+            return null;
+        }
+        candidates.sort((a, b) => a.distance - b.distance);
+        lastReadAloudToggleButton = candidates[0].button;
+        return candidates[0].button;
+    }
+
+    function rememberedReadAloudToggleIsActive(messageRoot) {
+        const button = resolveRememberedReadAloudToggle(messageRoot);
+        if (!button) {
+            return false;
+        }
+        const signature = readAloudToggleSignature(button);
+        if (!signature) {
+            return false;
+        }
+        if (lastReadAloudToggleActiveSignature && signature === lastReadAloudToggleActiveSignature) {
+            return true;
+        }
+        if (lastReadAloudToggleIdleSignature && signature !== lastReadAloudToggleIdleSignature) {
+            return true;
+        }
+        /*
+         * A dispatched click is not proof that ChatGPT actually started audio.
+         * Only a real Stop/active-state DOM change may mark playback active.
+         */
+        return false;
+    }
+
+    /* v8.11.10: ChatGPT may render message action controls without the older
+     * data-message-author-role, conversation-turn, markdown or prose markers.
+     * Discover the LAST compact response action row directly by its geometry.
+     * Only take rows with at least five aligned icon controls, excluding our UI.
+     * This fallback is used only when all semantic assistant roots failed. */
+    function findLatestAssistantActionRowRoot() {
+        const rows = [];
+        for (const button of safeQueryAll(document, 'button,[role="button"]')) {
+            if (!button || closestOrNull(button, '#' + WIDGET_ID) || !isElementLaidOut(button)) continue;
+            const rect = button.getBoundingClientRect();
+            if (rect.width < 14 || rect.width > 64 || rect.height < 14 || rect.height > 55) continue;
+            const text = normalizeSpace(button.textContent || '');
+            if (text.length > 8) continue;
+            const parent = button.parentElement;
+            if (!parent) continue;
+            const centerY = rect.top + rect.height / 2;
+            let row = rows.find((item) => Math.abs(item.y - centerY) <= 9 &&
+                Math.abs(item.left - rect.left) < 700);
+            if (!row) { row = { y: centerY, left: rect.left, buttons: [] }; rows.push(row); }
+            row.buttons.push(button);
+        }
+        const candidates = rows.filter((row) => row.buttons.length >= 5);
+        candidates.forEach((row) => row.buttons.sort((a, b) =>
+            a.getBoundingClientRect().left - b.getBoundingClientRect().left));
+        // Use DOM order of the toolbar's fifth button, not screen Y or selector priority.
+        candidates.sort((a, b) => {
+            const x = a.buttons[4], y = b.buttons[4];
+            if (x === y) return 0;
+            return (x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1;
+        });
+        for (let i = candidates.length - 1; i >= 0; i--) {
+            const row = candidates[i];
+            const fifth = row.buttons[4];
+            /* Prefer the smallest DOM ancestor containing the complete action row,
+             * not document.body (which would accidentally target a different turn). */
+            let root = fifth.parentElement;
+            while (root && root !== document.body &&
+                !row.buttons.every((button) => root.contains(button))) root = root.parentElement;
+            if (!root || root === document.body || closestOrNull(root, '#' + WIDGET_ID)) continue;
+            const rowRect = root.getBoundingClientRect();
+            if (rowRect.width > 900 || rowRect.height > 450) continue;
+            /* Promote the compact toolbar wrapper to its complete assistant
+             * turn whenever ChatGPT exposes one. This gives response tracking
+             * a stable ID/text identity even when toolbar positions change
+             * during scrolling, playback or dynamic rendering. */
+            const turnRoot = closestOrNull(fifth,
+                '[data-testid*="conversation-turn"], [data-turn-id], article, [data-message-id]');
+            if (turnRoot && turnRoot !== document.body) return turnRoot;
+
+            /* Some ChatGPT layouts expose no semantic turn attribute. Walk
+             * upward from the toolbar and use the nearest container that also
+             * contains real response text, rather than returning the toolbar
+             * itself with an unstable global button index. */
+            let textRoot = root;
+            while (textRoot && textRoot.parentElement && textRoot.parentElement !== document.body) {
+                textRoot = textRoot.parentElement;
+                const responseText = getAssistantResponseText(textRoot);
+                if (responseText.length >= 12) return textRoot;
+            }
+            // Diagnostic only on actions, not each DOM polling tick.
+            return root;
+        }
+        // Avoid flooding developer logs while ChatGPT renders its action row.
+        return null;
+    }
+
+    /* v8.12.21: one canonical assistant-turn detector for every feature.
+     * Previous revisions stacked independent semantic/prose/action-row detectors.
+     * ChatGPT can temporarily render a new answer as prose before adding its
+     * semantic assistant attributes or toolbar, so the old fallback chain could
+     * keep returning the previous answer forever. Collect every valid assistant
+     * representation together, normalize it to its turn root, and select by DOM
+     * order. Manual Read Aloud, AutoSend baseline and Full Flow now share this. */
+    function getAssistantMessageRoots() {
+        const roots = [];
+        const seen = new Set();
+
+        function addCandidate(node, strongAssistantSignal) {
+            if (!node || closestOrNull(node, '#' + WIDGET_ID)) return;
+
+            const root = closestOrNull(node,
+                '[data-testid*="conversation-turn"], [data-turn-id], article, [data-message-id]') || node;
+            if (!root || seen.has(root) || closestOrNull(root, '#' + WIDGET_ID)) return;
+            if (!isElementLaidOut(root)) return;
+
+            const role = normalizeSpace(root.getAttribute && root.getAttribute('data-message-author-role')).toLowerCase();
+            const testId = normalizeSpace(root.getAttribute && root.getAttribute('data-testid')).toLowerCase();
+            const explicitAssistant = role === 'assistant' || /assistant/.test(testId) ||
+                Boolean(root.querySelector && root.querySelector('[data-message-author-role="assistant"]'));
+            const explicitUser = role === 'user' || /conversation-turn.*user|user-message/.test(testId) ||
+                Boolean(root.querySelector && root.querySelector('[data-message-author-role="user"]') && !explicitAssistant);
+
+            if (explicitUser) return;
+
+            const proseSignal = Boolean(
+                node.matches && node.matches('.markdown,.prose') ||
+                root.querySelector && root.querySelector('.markdown,.prose')
+            );
+            if (!strongAssistantSignal && !explicitAssistant && !proseSignal) return;
+
+            const text = getAssistantResponseText(root);
+            if (!explicitAssistant && !text) return;
+
+            seen.add(root);
+            roots.push(root);
+        }
+
+        for (const node of safeQueryAll(document,
+            '[data-message-author-role="assistant"], [data-testid*="assistant" i]')) {
+            addCandidate(node, true);
+        }
+        for (const node of safeQueryAll(document, '.markdown,.prose')) {
+            if (closestOrNull(node, '[data-message-author-role="user"]')) continue;
+            addCandidate(node, false);
+        }
+
+        /* Last-resort compatibility for layouts that expose only the compact
+         * assistant action row. Do not let it compete with real answer content. */
+        if (!roots.length) {
+            const actionRoot = findLatestAssistantActionRowRoot();
+            if (actionRoot) addCandidate(actionRoot, true);
+        }
+
+        const topRoots = roots.filter((root) =>
+            !roots.some((other) => other !== root && other.contains && other.contains(root)));
+        topRoots.sort((a, b) => {
+            if (a === b) return 0;
+            return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1;
+        });
+        return topRoots;
+    }
+
+    function getLatestAssistantMessageRoot() {
+        /* 9.0.1: the conversation's last assistant turn is determined by
+         * document order, NEVER viewport geometry or a remembered target.
+         * Scrolling and virtualization can move an earlier turn lower on screen. */
+        const roots = getAssistantMessageRoots();
+        return roots.length ? roots[roots.length - 1] : null;
+    }
+
+    function getAssistantResponseText(root) {
+        if (!root || !document.createTreeWalker || typeof NodeFilter === 'undefined') return '';
+        const chunks = [];
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        let textNode = walker.nextNode();
+        while (textNode) {
+            const parent = textNode.parentElement;
+            if (parent && !closestOrNull(parent, 'button,[role="button"],script,style,svg,#' + WIDGET_ID)) {
+                const value = normalizeSpace(textNode.nodeValue || '');
+                if (value) chunks.push(value);
+            }
+            textNode = walker.nextNode();
+        }
+        return normalizeSpace(chunks.join(' '));
     }
 
     function getAssistantMessageKey(root) {
-        const messageRoot = root || getLastAssistantMessageRoot();
+        const messageRoot = root || getLatestAssistantMessageRoot();
         if (!messageRoot) {
             return '';
         }
@@ -1121,58 +2095,19 @@
             return 'turn:' + turnId;
         }
 
-        return 'hash:' + hashText(normalizeSpace(messageRoot.textContent || '').slice(0, 1200));
-    }
-
-    function sendEscapeKeyToCloseFloatingMenus() {
-        try {
-            const eventInit = {
-                bubbles: true,
-                cancelable: true,
-                key: 'Escape',
-                code: 'Escape',
-                keyCode: 27,
-                which: 27
-            };
-            document.dispatchEvent(new KeyboardEvent('keydown', eventInit));
-            document.dispatchEvent(new KeyboardEvent('keyup', eventInit));
-        } catch (error) {
-            logRuntimeError('close ReadAloud menu failed', error);
+        const text = getAssistantResponseText(messageRoot).slice(0, 1200);
+        if (text) {
+            const roots = getAssistantMessageRoots();
+            let ordinal = roots.indexOf(messageRoot);
+            if (ordinal < 0) {
+                ordinal = roots.findIndex((root) =>
+                    root === messageRoot ||
+                    root.contains && root.contains(messageRoot) ||
+                    messageRoot.contains && messageRoot.contains(root));
+            }
+            return 'hash:' + hashText(text) + ':assistant:' + Math.max(ordinal, 0);
         }
-    }
-
-    async function inspectLastAssistantReadAloudMenuMode(messageRoot) {
-        const root = messageRoot || getLastAssistantMessageRoot();
-        if (!root) {
-            return 'unknown';
-        }
-
-        if (findReadAloudActionCandidate('stop', root) || findReadAloudActionCandidate('stop', document)) {
-            return 'stop';
-        }
-        if (findReadAloudActionCandidate('start', root)) {
-            return 'start';
-        }
-
-        const more = findMoreActionsButton(root);
-        if (!more) {
-            return 'unknown';
-        }
-
-        clickLikeUser(more);
-        await sleep(260);
-
-        const hasStop = Boolean(findReadAloudActionCandidate('stop', document));
-        const hasStart = Boolean(findReadAloudActionCandidate('start', document));
-        sendEscapeKeyToCloseFloatingMenus();
-
-        if (hasStop) {
-            return 'stop';
-        }
-        if (hasStart) {
-            return 'start';
-        }
-        return 'unknown';
+        return '';
     }
 
     function clickLikeUser(el) {
@@ -1252,36 +2187,37 @@
             '[data-testid*="audio" i]',
             '[data-testid*="speaker" i]'
         ];
+        const candidates = [];
+        const seen = new Set();
 
         for (const selector of selectors) {
             for (const el of safeQueryAll(searchRoot, selector)) {
-                if (!el || !isElementVisible(el) || closestOrNull(el, '#' + WIDGET_ID)) {
+                if (!el || seen.has(el) || !isElementVisible(el) || closestOrNull(el, '#' + WIDGET_ID)) {
                     continue;
                 }
+                seen.add(el);
 
-                const label = normalizeSpace([
-                    textOf(el),
-                    el.getAttribute && el.getAttribute('aria-label'),
-                    el.getAttribute && el.getAttribute('title'),
-                    el.getAttribute && el.getAttribute('data-testid'),
-                    el.querySelector && Array.from(el.querySelectorAll('[aria-label],[title],[data-testid]')).map((child) => [
-                        child.getAttribute('aria-label'),
-                        child.getAttribute('title'),
-                        child.getAttribute('data-testid')
-                    ].filter(Boolean).join(' ')).join(' ')
-                ].filter(Boolean).join(' '));
-
-                if (!label || !matcher.test(label)) {
-                    continue;
-                }
-
+                const label = getReadAloudActionDescriptor(el);
                 const clickable = closestOrNull(el, 'button,[role="button"],[role="menuitem"],[cmdk-item]') || el;
-                if (clickable && isElementVisible(clickable) && !closestOrNull(clickable, '#' + WIDGET_ID)) {
-                    return clickable;
+                if (!clickable || !isElementVisible(clickable) || closestOrNull(clickable, '#' + WIDGET_ID)) {
+                    continue;
                 }
+
+                const explicitMatch = Boolean(label && matcher.test(label));
+                const heuristicScore = scoreReadAloudActionCandidate(mode, clickable, root || searchRoot);
+                if (!explicitMatch && heuristicScore < 300) {
+                    continue;
+                }
+                candidates.push({ clickable, score: heuristicScore + (explicitMatch ? 500 : 0) });
             }
         }
-        return null;
+
+        if (candidates.length === 0) {
+            return null;
+        }
+
+        candidates.sort((a, b) => b.score - a.score);
+        return candidates[0].clickable;
     }
 
     function isMoreActionsButton(button) {
@@ -1422,11 +2358,46 @@
         return null;
     }
 
-    async function clickChatGPTReadAloudMenuAction(mode) {
-        const messageRoot = getLastAssistantMessageRoot();
-        if (!messageRoot) {
+    function clickRememberedReadAloudPosition(messageRoot) {
+        const root = messageRoot || getLatestAssistantMessageRoot();
+        if (!root) {
             return false;
         }
+
+        if (lastReadAloudToggleOffset) {
+            try {
+                const rootRect = root.getBoundingClientRect();
+                const x = rootRect.left + lastReadAloudToggleOffset.x + (lastReadAloudToggleOffset.width / 2);
+                const y = rootRect.top + lastReadAloudToggleOffset.y + (lastReadAloudToggleOffset.height / 2);
+                const currentButton = clickableFromPoint(x, y);
+                if (currentButton) {
+                    lastReadAloudToggleButton = currentButton;
+                    lastReadAloudToggleViewportPoint = { x, y };
+                    return clickLikeUser(currentButton);
+                }
+            } catch (error) {
+                logRuntimeError('ReadAloud same-position click failed', error);
+            }
+        }
+
+        if (lastReadAloudToggleViewportPoint) {
+            const currentButton = clickableFromPoint(lastReadAloudToggleViewportPoint.x, lastReadAloudToggleViewportPoint.y);
+            if (currentButton) {
+                lastReadAloudToggleButton = currentButton;
+                return clickLikeUser(currentButton);
+            }
+        }
+
+        return false;
+    }
+
+    async function clickChatGPTReadAloudMenuAction(mode, targetRoot) {
+        const messageRoot = targetRoot || getLatestAssistantMessageRoot();
+        if (!messageRoot) {
+            logReadAloudDiagnostic('No assistant message root in DOM');
+            return false;
+        }
+        logReadAloudDiagnostic('Action=' + mode + '; assistant root=' + messageRoot.tagName);
 
         try {
             if (typeof messageRoot.scrollIntoView === 'function') {
@@ -1461,15 +2432,60 @@
 
         await sleep(300);
 
-        /* Stop can sometimes be exposed as a direct visible button while playback is active. */
-        if (mode === 'stop') {
-            const directStop = findReadAloudActionCandidate('stop', messageRoot) || findReadAloudActionCandidate('stop', document);
-            if (directStop) {
-                return clickLikeUser(directStop);
+        /*
+         * Current ChatGPT UI: Read Aloud is the FIFTH button in the assistant
+         * action row. During playback that SAME fifth slot becomes the Stop square.
+         * Use the fixed slot before any label/tooltip/menu heuristics.
+         */
+        const fixedSlotButton = getFixedReadAloudSlotButton(messageRoot);
+        logReadAloudDiagnostic('Fifth button=' + Boolean(fixedSlotButton) + '; action row buttons=' + collectAssistantBottomActionRowButtons(messageRoot).length);
+
+        if (mode === 'start' && fixedSlotButton) {
+            readAloudSlotIdleSignature = readAloudToggleSignature(fixedSlotButton) || readAloudSlotIdleSignature;
+            rememberReadAloudToggle(fixedSlotButton, messageRoot);
+            const clicked = clickLikeUser(fixedSlotButton);
+            logReadAloudDiagnostic('Clicked fifth Read Aloud button=' + clicked);
+            return clicked;
+        }
+
+        if (mode === 'stop' && fixedSlotButton) {
+            const fixedSlotActive = fixedReadAloudSlotIsActive(messageRoot);
+            const extensionKnowsPlayback = Boolean(
+                state.pageReadAloudActive ||
+                manualReadAloudStartPending ||
+                (lastReadAloudToggleMessageKey && lastReadAloudToggleMessageKey === getAssistantMessageKey(messageRoot))
+            );
+            if (fixedSlotActive || extensionKnowsPlayback) {
+                lastReadAloudToggleButton = fixedSlotButton;
+                return clickLikeUser(fixedSlotButton);
             }
         }
 
-        /* ChatGPT currently exposes Read Aloud from the message three-dots menu. */
+        if (mode === 'stop') {
+            if (clickRememberedReadAloudPosition(messageRoot)) {
+                return true;
+            }
+            const rememberedToggle = resolveRememberedReadAloudToggle(messageRoot);
+            if (rememberedToggle) {
+                return clickLikeUser(rememberedToggle);
+            }
+
+            const slotStop = findActiveReadAloudToggleBySlot();
+            if (slotStop) {
+                lastReadAloudToggleButton = slotStop;
+                return clickLikeUser(slotStop);
+            }
+        }
+
+        const directAction = findReadAloudActionCandidate(mode, messageRoot);
+        if (directAction) {
+            if (mode === 'start') {
+                rememberReadAloudToggle(directAction, messageRoot);
+            }
+            return clickLikeUser(directAction);
+        }
+
+        /* Legacy ChatGPT layout: Read Aloud lives in the message three-dots menu. */
         const more = findMoreActionsButton(messageRoot);
         if (more) {
             clickLikeUser(more);
@@ -1477,22 +2493,89 @@
 
             const menuAction = await waitForReadAloudMenuAction(mode, 3200);
             if (menuAction) {
+                if (mode === 'start') {
+                    rememberReadAloudToggle(menuAction, messageRoot);
+                }
                 return clickLikeUser(menuAction);
             }
         }
 
         /* Fallback only after the message menu path failed; avoids clicking stale global UI. */
-        const fallback = findReadAloudActionCandidate(mode, messageRoot) || findReadAloudActionCandidate(mode, document);
+        const fallback = findReadAloudActionCandidate(mode, messageRoot);
         if (fallback) {
+            if (mode === 'start') {
+                rememberReadAloudToggle(fallback, messageRoot);
+            }
             return clickLikeUser(fallback);
         }
 
+        /* Never use a start-like control as a Stop fallback: doing so starts
+           another answer when playback has already ended. */
+        if (mode === 'stop') {
+            const genericStop = findGenericStopButton(messageRoot);
+            if (genericStop) {
+                return clickLikeUser(genericStop);
+            }
+        }
+
+        logReadAloudDiagnostic('No matching Read Aloud / Stop control found');
         setStatus(mode === 'stop' ? 'Stop not found' : 'ReadAloud not found');
         return false;
     }
 
     function detectVisiblePageReadAloudStop() {
-        return Boolean(findReadAloudActionCandidate('stop', document));
+        // v9.0.2: A geometrically matched button is NOT proof of playback.
+        // The previous fallback returned an idle action from an older answer,
+        // causing "ReadAloud already active / waiting end" without audio.
+        // Check only the newest assistant turn, with explicit Stop state or
+        // a verified transition of its own Read Aloud toggle.
+        const messageRoot = getLatestAssistantMessageRoot();
+        if (!messageRoot) return false;
+        const slot = getFixedReadAloudSlotButton(messageRoot);
+        if (slot) {
+            const descriptor = getReadAloudActionDescriptor(slot);
+            if (readAloudActionText('stop').test(descriptor)) return true;
+            if (readAloudActionText('start').test(descriptor)) return false;
+        }
+        return Boolean(fixedReadAloudSlotIsActive(messageRoot));
+    }
+
+    async function waitForReadAloudPlaybackStart(messageRoot, idleSignature, timeoutMs) {
+        const startedAt = now();
+        const timeout = Math.max(400, Number(timeoutMs) || 2600);
+
+        while (now() - startedAt < timeout) {
+            const root = getLatestAssistantMessageRoot() || messageRoot;
+            const fixedSlotButton = getFixedReadAloudSlotButton(root);
+
+            if (fixedSlotButton) {
+                const descriptor = getReadAloudActionDescriptor(fixedSlotButton);
+                if (readAloudActionText('stop').test(descriptor)) {
+                    return true;
+                }
+
+                const currentSignature = readAloudToggleSignature(fixedSlotButton);
+                if (
+                    idleSignature &&
+                    currentSignature &&
+                    currentSignature !== idleSignature &&
+                    !readAloudActionText('start').test(descriptor)
+                ) {
+                    return true;
+                }
+            }
+
+            if (
+                findReadAloudActionCandidate('stop', document) ||
+                findGenericStopButton(document)
+            ) {
+                return true;
+            }
+
+            await sleep(120);
+        }
+
+        return false;
     }
 
     function isReadAloudPlaybackActive() {
@@ -1515,128 +2598,179 @@
             return;
         }
 
-        state.enabled = true;
+        /* Read Aloud completion must NEVER change the independent
+         * New Transcription + TOS choice.  That toggle alone decides
+         * whether the next cycle starts the microphone or waits for the user. */
+        responsePipelineActive = false;
+        readAloudFlowInProgress = false;
         cycleDone = false;
-        waitingUserInputAfterResponse = false;
+        waitingUserInputAfterResponse = !state.enabled;
         autoStartArmed = true;
         autoStartBusy = false;
         skipReadAloudGateOnce = true;
         resetAutoReadAloudFlow();
-        saveStatePatch({ enabled: true }).catch((error) => logRuntimeError('manual ReadAloud flow save failed', error));
         updateWidget();
-        setStatus(reason || 'ReadAloud done / start voice');
+        setStatus(state.enabled
+            ? (reason || 'ReadAloud done / start voice')
+            : 'ReadAloud done / waiting user input');
         window.setTimeout(() => {
             autoStartVoiceRecordingIfReady().catch((error) => logRuntimeError('manual ReadAloud next step failed', error));
         }, 260);
     }
 
-    function watchManualReadAloudEnd(startedAt) {
-        let stopWasVisible = false;
-        let checks = 0;
+    function watchManualReadAloudEnd(startedAt, playbackSession, messageRoot, idleSignature) {
+        /* Playback start is already confirmed. Follow only the exact Read Aloud
+         * slot that was clicked: idle speaker -> Stop -> idle speaker. */
+        let stopWasVisible = true;
         const timer = window.setInterval(() => {
-            checks += 1;
-            const stopVisible = detectVisiblePageReadAloudStop();
-            if (stopVisible) {
+            if (playbackSession !== manualReadAloudSession) {
+                window.clearInterval(timer);
+                return;
+            }
+
+            const slot = getFixedReadAloudSlotButton(messageRoot);
+            if (!slot) {
+                setStatus('Waiting ReadAloud button');
+                return;
+            }
+
+            const descriptor = getReadAloudActionDescriptor(slot);
+            const signature = readAloudToggleSignature(slot);
+            const isIdle = Boolean(
+                readAloudActionText('start').test(descriptor) ||
+                (idleSignature && signature === idleSignature)
+            );
+            const isStop = Boolean(
+                readAloudActionText('stop').test(descriptor) ||
+                (idleSignature && signature && signature !== idleSignature && !isIdle)
+            );
+
+            if (isStop) {
                 stopWasVisible = true;
                 state.pageReadAloudActive = true;
+                setStatus('ReadAloud playing');
                 updateWidget();
                 return;
             }
 
-            const oldEnough = now() - startedAt > 1800;
-            if ((stopWasVisible && oldEnough) || checks > 900) {
+            if (stopWasVisible && isIdle && now() - startedAt > 350) {
                 window.clearInterval(timer);
                 state.pageReadAloudActive = false;
+                readAloudFlowInProgress = false;
+                state.pageReadAloudLastActionAt = now();
                 updateWidget();
-                if (stopWasVisible) {
-                    continueFullFlowAfterManualReadAloud('ReadAloud done / start voice');
+                logReadAloudDiagnostic('Exact Read Aloud button returned from Stop to Read Aloud: playback finished');
+                continueFullFlowAfterManualReadAloud('ReadAloud done / start voice');
+            }
+        }, 180);
+    }
+
+    async function startPageReadAloudPlayback(targetRoot = null) {
+        /* Start is idempotent: repeated clicks NEVER move to a different message.
+         * v8.12.25: never let a stale pageReadAloudActive boolean block a new
+         * response. The DOM Stop state is authoritative, as in the stable
+         * v8.12.18 Trigger Read Aloud path. */
+        const playbackActuallyActive = detectVisiblePageReadAloudStop();
+        if (state.pageReadAloudActive && !playbackActuallyActive) {
+            state.pageReadAloudActive = false;
+            logDeveloperEvent('READ_ALOUD', 'Cleared stale playback-active flag before Read Aloud start');
+            updateWidget();
+        }
+        if (manualReadAloudStartPending || playbackActuallyActive) {
+            logDeveloperEvent('READ_ALOUD', 'Manual start ignored: playback actually active');
+            return false;
+        }
+        const playbackSession = ++manualReadAloudSession;
+        manualReadAloudStartPending = true;
+        readAloudFlowInProgress = true;
+        /* Automatic mode must honor the verified response of this cycle.
+         * Manual mode (null target) still selects the newest assistant reply. */
+        manualReadAloudTargetRoot = targetRoot || getLatestAssistantMessageRoot();
+        logDeveloperEvent('READ_ALOUD', 'Manual newest semantic target=' + getAssistantMessageKey(manualReadAloudTargetRoot));
+        try {
+        /* Manual ReadAloud Last is START-ONLY. Stop has its own dedicated button. */
+        for (let attempt = 1; attempt <= 2; attempt += 1) {
+            if (playbackSession !== manualReadAloudSession) return false;
+            const messageRoot = targetRoot || getLatestAssistantMessageRoot();
+            manualReadAloudTargetRoot = messageRoot;
+            if (!messageRoot) {
+                logReadAloudDiagnostic('ReadAloud message not found (assistant root missing); turn=' + safeQueryAll(document, '[data-testid*="conversation-turn"]').length + '; assistant=' + safeQueryAll(document, '[data-message-author-role="assistant"]').length + '; markdown=' + safeQueryAll(document, '.markdown,.prose').length);
+                setStatus('ReadAloud message not found');
+                return false;
+            }
+
+            const fixedSlotButton = getFixedReadAloudSlotButton(messageRoot);
+            const idleSignature = fixedSlotButton ? readAloudToggleSignature(fixedSlotButton) : '';
+            if (idleSignature) {
+                readAloudSlotIdleSignature = idleSignature;
+            }
+
+            const ok = await clickChatGPTReadAloudMenuAction('start', messageRoot);
+            if (playbackSession !== manualReadAloudSession) return false;
+            if (!ok) {
+                if (attempt === 1) {
+                    await sleep(260);
+                    continue;
                 }
-            }
-        }, 700);
-    }
-
-    async function togglePageReadAloudPlayback() {
-        const wantsStop = isReadAloudPlaybackActive();
-        const mode = wantsStop ? 'stop' : 'start';
-        const ok = await clickChatGPTReadAloudMenuAction(mode);
-        if (!ok) {
-            setStatus(mode === 'stop' ? 'Stop not found' : 'ReadAloud not found');
-            return;
-        }
-
-        state.pageReadAloudActive = mode === 'start';
-        state.pageReadAloudLastActionAt = now();
-        updateWidget();
-        setStatus(state.pageReadAloudActive ? 'ReadAloud playing' : 'ReadAloud stopped');
-        window.setTimeout(syncPageReadAloudState, 700);
-        window.setTimeout(syncPageReadAloudState, 1800);
-        window.setTimeout(syncPageReadAloudState, 3600);
-
-        if (mode === 'start') {
-            watchManualReadAloudEnd(state.pageReadAloudLastActionAt);
-        } else {
-            continueFullFlowAfterManualReadAloud('ReadAloud stopped / start voice');
-        }
-    }
-
-    async function handleReloadExtensionClick() {
-        setStatus('Reloading…');
-
-        /* Reload defaults: Full Flow NO; operational sub-toggles YES; MAXI mode. */
-        state.fullFlowEnabled = false;
-        state.enabled = true;
-        state.sendEnabled = true;
-        state.triggerReadAloudEnabled = true;
-        state.minimized = false;
-        state.maximized = true;
-        state.visible = true;
-        updateWidget();
-
-        await saveStatePatch({
-            fullFlowEnabled: false,
-            enabled: true,
-            sendEnabled: true,
-            triggerReadAloudEnabled: true,
-            minimized: false,
-            maximized: true,
-            visible: true
-        }).catch((error) => logRuntimeError('reload state save failed', error));
-
-        try {
-            await positionMaxiAtRequestedReloadAnchor(true);
-        } catch (error) {
-            logRuntimeError('reload anchor failed', error);
-        }
-
-        try {
-            const extensionApi = getExtensionApi();
-            if (!extensionApi || !extensionApi.runtime || typeof extensionApi.runtime.sendMessage !== 'function') {
-                setStatus('Reload bridge unavailable');
-                return;
+                setStatus('ReadAloud not found');
+                return false;
             }
 
-            await new Promise((resolve, reject) => {
+            logReadAloudDiagnostic('Start attempt=' + attempt + '; click accepted');
+            setStatus(attempt === 1 ? 'Starting ReadAloud' : 'Retrying ReadAloud');
+            const started = await waitForReadAloudPlaybackStart(messageRoot, idleSignature, 2600);
+            if (playbackSession !== manualReadAloudSession) return false;
+            if (!started) {
+                state.pageReadAloudActive = false;
+                updateWidget();
+                if (attempt === 1) {
+                    await sleep(260);
+                    continue;
+                }
+                logReadAloudDiagnostic('Click did not yield Stop button; timeout');
+                setStatus('ReadAloud did not start');
+                return false;
+            }
+
+            state.pageReadAloudActive = true;
+            state.pageReadAloudLastActionAt = now();
+            updateWidget();
+            logReadAloudDiagnostic('Stop button detected: playback started');
+            setStatus('ReadAloud playing');
+            window.setTimeout(syncPageReadAloudState, 700);
+            window.setTimeout(syncPageReadAloudState, 1800);
+            window.setTimeout(syncPageReadAloudState, 3600);
+            watchManualReadAloudEnd(state.pageReadAloudLastActionAt, playbackSession, messageRoot, idleSignature);
+            return true;
+        }
+        } finally {
+            manualReadAloudStartPending = false;
+            if (!state.pageReadAloudActive) readAloudFlowInProgress = false;
+        }
+        return false;
+    }
+
+    function handleReloadExtensionClick() {
+        try {
+            /* v8.12.17: runtime reload invalidates the extension context but an
+             * already-open ChatGPT page can keep the old content-script world
+             * alive. Keep the background refresh flag, and add a page-native
+             * fallback timer that does not depend on the extension API after
+             * chrome.runtime.reload(). This guarantees that the current tab
+             * reloads and receives the freshly loaded unpacked extension. */
+            window.setTimeout(() => {
                 try {
-                    extensionApi.storage.local.set({ 'cgas.refreshAfterReload': true }, () => {
-                        const runtimeError = extensionApi.runtime.lastError;
-                        if (runtimeError) {
-                            reject(runtimeError);
-                            return;
-                        }
-                        resolve();
-                    });
-                } catch (error) {
-                    reject(error);
+                    window.location.reload();
+                } catch (reloadError) {
+                    console.log('[CGAS Mini] page reload fallback failed:', reloadError.message);
                 }
-            });
-
-            extensionApi.runtime.sendMessage({
-                type: 'CGAS_RELOAD_EXTENSION',
-                sourceVersion: VERSION
-            });
+            }, 900);
+            chrome.storage.local.set({ 'cgas.refreshAfterReload': true }, () =>
+                chrome.runtime.sendMessage({ type: 'CGAS_RELOAD_EXTENSION' })
+            );
+            setStatus('Reloading extension + page…');
         } catch (error) {
-            setStatus('Reload bridge failed');
-            console.log('[CGAS Mini] reload bridge failed:', error && error.message ? error.message : error);
+            setStatus(`Reload failed: ${error.message}`);
         }
     }
 
@@ -1711,6 +2845,62 @@
             }
         }
         return null;
+    }
+
+    function getDictationActionDescriptor(button) {
+        if (!button) return '';
+        return normalizeSpace([
+            textOf(button),
+            button.getAttribute && button.getAttribute('aria-label'),
+            button.getAttribute && button.getAttribute('title'),
+            button.getAttribute && button.getAttribute('data-testid'),
+            button.querySelector && Array.from(button.querySelectorAll('[aria-label],[title],[data-testid]')).map((child) => [
+                child.getAttribute('aria-label'),
+                child.getAttribute('title'),
+                child.getAttribute('data-testid')
+            ].filter(Boolean).join(' ')).join(' ')
+        ].filter(Boolean).join(' '));
+    }
+
+    function findExplicitDictationActionButton(mode) {
+        const composerRoot = findComposerRoot();
+        const roots = composerRoot ? [composerRoot, document] : [document];
+        const stopRe = /stop\s+dictation|end\s+dictation|stop\s+recording|arr[eê]ter\s+(la\s+)?dict[eé]e|arr[eê]ter\s+(l['’]?)enregistrement|terminer\s+(la\s+)?dict[eé]e/i;
+        const sendRe = /send\s+dictated\s+message|send\s+(the\s+)?dictation|send\s+(the\s+)?transcription|submit\s+dictation|envoyer.*(dict[eé]e|transcription)|envoi.*(dict[eé]e|transcription)/i;
+        const matcher = mode === 'send' ? sendRe : stopRe;
+        const reject = mode === 'send'
+            ? /read\s+aloud|stop|cancel|attach|upload|file|image|tool|search|voice\s*mode|advanced\s+voice|live\s+voice/i
+            : /read\s+aloud|stop\s+generating|generation|g[eé]n[ée]ration|cancel|attach|upload|file|image|tool|search|voice\s*mode|advanced\s+voice|live\s+voice/i;
+        const seen = new Set();
+        const candidates = [];
+
+        for (const root of roots) {
+            for (const button of safeQueryAll(root, 'button,[role="button"]')) {
+                if (!button || seen.has(button) || closestOrNull(button, '#' + WIDGET_ID) || !isElementLaidOut(button)) continue;
+                seen.add(button);
+                const descriptor = getDictationActionDescriptor(button);
+                if (!descriptor || !matcher.test(descriptor) || reject.test(descriptor)) continue;
+                if (composerRoot && !composerRoot.contains(button) && !isLowerComposerControl(button, composerRoot)) continue;
+                const rect = button.getBoundingClientRect();
+                let score = 500;
+                if (composerRoot && composerRoot.contains(button)) score += 250;
+                if (isElementVisible(button)) score += 100;
+                if (mode === 'send' && /send\s+dictated\s+message/i.test(descriptor)) score += 250;
+                if (mode === 'stop' && /stop\s+dictation/i.test(descriptor)) score += 250;
+                score += Math.min(100, Math.max(0, rect.bottom / Math.max(1, window.innerHeight) * 100));
+                candidates.push({ button, score });
+            }
+        }
+        candidates.sort((a, b) => b.score - a.score);
+        return candidates.length ? candidates[0].button : null;
+    }
+
+    function findDictationStopButton() {
+        return findExplicitDictationActionButton('stop');
+    }
+
+    function findDictatedMessageSendButton() {
+        return findExplicitDictationActionButton('send');
     }
 
     function scoreTranscriptionFinishButton(button, composerRoot, allowGlobal) {
@@ -2138,7 +3328,6 @@
         lastRms = 0;
         lastLevel = 0;
         updateVolumeMeter();
-        ensureWidgetInsideViewport(true);
     }
 
     async function ensureAudioMonitor() {
@@ -2247,6 +3436,10 @@
         waitingUserInputAfterResponse = false;
         skipReadAloudGateOnce = false;
         draftTranscriptPending = false;
+        waitingForNewAssistantResponse = false;
+        responsePipelineActive = false;
+        readAloudFlowInProgress = false;
+        resetAssistantResponseWait();
         resetAutoReadAloudFlow();
         stopAudioMonitor();
         setStatus(reason || 'Cycle stopped');
@@ -2254,154 +3447,541 @@
     }
 
     async function clickTranscriptionFinishByTos(level) {
-        if (cycleDone || vClickedThisCycle || sendAttemptedThisCycle) {
+        if (cycleDone || vClickedThisCycle || sendAttemptedThisCycle || responsePipelineActive || readAloudFlowInProgress) {
             return false;
         }
         if (now() - lastFinishClickAt < CONFIG.finishClickCooldownMs) {
             return false;
         }
-        const finishButton = findTranscriptionFinishButton();
-        if (!finishButton) {
-            return false;
+
+        /* Exact TOS branch:
+         *   AutoSend OFF -> Stop Dictation -> wait for transcript in PROMPT.
+         *   AutoSend ON  -> Send Dictated Message -> common response pipeline. */
+        if (!state.sendEnabled) {
+            const stopButton = findDictationStopButton();
+            if (!stopButton) {
+                setStatus('Stop Dictation not found');
+                return false;
+            }
+            try {
+                const clicked = clickLikeUser(stopButton);
+                if (!clicked) return false;
+                vClickedThisCycle = true;
+                lastFinishClickAt = now();
+                pendingSendAfterV = true;
+                pendingSendStartedAt = now();
+                stopAudioMonitor();
+                lastComposerText = '';
+                composerStableSince = 0;
+                resetSilenceState();
+                logDeveloperEvent('TOS', 'AutoSend OFF -> Stop Dictation');
+                setStatus('Stop Dictation / waiting transcript');
+                return true;
+            } catch (error) {
+                await forceCycleOff('Stop Dictation failed / OFF');
+                logRuntimeError('Stop Dictation failed', error);
+                return false;
+            }
+        }
+
+        const sendDictatedButton = findDictatedMessageSendButton();
+        if (!sendDictatedButton) {
+            /* The ChatGPT dictation overlay does not always expose a named
+             * Send Dictated Message action. Safely finalize the dictation first,
+             * then reuse monitorPendingSend() for one ordinary composer SEND.
+             * Never submit the prompt while dictation is still recording. */
+            const stopButton = findDictationStopButton() ||
+                (hasActiveVoiceRecordingEvidence() ? findTranscriptionFinishButton() : null);
+            if (!stopButton) {
+                setStatus('Waiting dictation completion control / AutoSend ON');
+                return false;
+            }
+            try {
+                if (!clickLikeUser(stopButton)) return false;
+                vClickedThisCycle = true;
+                lastFinishClickAt = now();
+                pendingSendAfterV = true;
+                pendingSendStartedAt = now();
+                stopAudioMonitor();
+                lastComposerText = '';
+                composerStableSince = 0;
+                resetSilenceState();
+                logDeveloperEvent('TOS', 'AutoSend ON: direct Send Dictated Message unavailable; finalize dictation -> transcript -> one composer SEND');
+                setStatus('AutoSend ON / waiting transcript for SEND');
+                return true;
+            } catch (error) {
+                logRuntimeError('AutoSend dictation finalize fallback failed', error);
+                setStatus('AutoSend ON / dictation finish failed');
+                return false;
+            }
         }
         try {
-            finishButton.click();
+            beginAssistantResponseWait();
+            const clicked = clickLikeUser(sendDictatedButton);
+            if (!clicked) {
+                waitingForNewAssistantResponse = false;
+                responsePipelineActive = false;
+                resetAssistantResponseWait();
+                return false;
+            }
             vClickedThisCycle = true;
+            sendAttemptedThisCycle = true;
             lastFinishClickAt = now();
-            pendingSendAfterV = true;
-            pendingSendStartedAt = now();
+            lastSendAt = now();
+            pendingSendAfterV = false;
+            pendingSendStartedAt = 0;
+            manualVoiceSessionSeen = false;
             stopAudioMonitor();
             lastComposerText = '';
             composerStableSince = 0;
             resetSilenceState();
-            setStatus('V clicked, waiting transcript / VOL ' + level);
+            logDeveloperEvent('TOS', 'AutoSend ON -> Send Dictated Message');
+            armNextCycleAfterSend('Send Dictated Message / waiting response');
             return true;
         } catch (error) {
-            await forceCycleOff('V click failed / OFF');
-            console.log('[CGAS Mini] V click failed:', error.message);
+            waitingForNewAssistantResponse = false;
+            responsePipelineActive = false;
+            resetAssistantResponseWait();
+            await forceCycleOff('Send Dictated Message failed / OFF');
+            logRuntimeError('Send Dictated Message failed', error);
             return false;
         }
     }
 
-    function isLastAssistantReadAloudReadySignalAvailable() {
-        if (state.pageReadAloudActive || detectVisiblePageReadAloudStop()) {
-            return false;
-        }
+    function isLastAssistantReadAloudReadySignalAvailable(targetRoot = null) {
+        const messageRoot = targetRoot || getLatestAssistantMessageRoot();
+        if (!messageRoot) return false;
 
-        const messageRoot = getLastAssistantMessageRoot();
-        if (!messageRoot) {
-            return false;
-        }
-
+        /* Canonical end-of-Writing signal requested by the workflow: the current
+         * assistant response exposes its Read Aloud control.  Do not treat a
+         * generic More menu as completion. */
         const directReadAloud = findReadAloudActionCandidate('start', messageRoot);
-        if (directReadAloud) {
+        if (directReadAloud) return true;
+
+        const fixedSlotButton = getFixedReadAloudSlotButton(messageRoot);
+        if (!fixedSlotButton || !isElementLaidOut(fixedSlotButton)) return false;
+        const descriptor = getReadAloudActionDescriptor(fixedSlotButton);
+        if (readAloudActionText('start').test(descriptor)) return true;
+
+        /* On icon-only/hover-hidden layouts the action row itself is rendered only
+         * after Writing completes.  The remembered idle signature identifies the
+         * same Read Aloud slot without relying on visible text. */
+        const signature = readAloudToggleSignature(fixedSlotButton);
+        const idleSignature = readAloudSlotIdleSignature || learnFixedReadAloudIdleSignature(messageRoot);
+        return Boolean(idleSignature && signature && signature === idleSignature);
+    }
+
+    function isAssistantGenerating() {
+        return safeQueryAll(document,
+            '[data-testid="stop-button"],button[aria-label*="Stop generating" i],button[aria-label*="Arrêter la génération" i]')
+            .some(isElementVisible);
+    }
+
+    function resetAssistantResponseWait() {
+        assistantResponseWaitStartedAt = 0;
+        assistantResponseNetworkStarted = false;
+        assistantResponseNetworkCompleted = false;
+        assistantResponseNetworkCompletedAt = 0;
+        assistantResponseTargetRoot = null;
+        assistantResponseMissingTargetLogged = false;
+        assistantResponseBaselineKey = '';
+        assistantResponseBaselineText = '';
+        assistantResponseBaselineReadAloudButton = null;
+        assistantResponsePerformanceStart = 0;
+    }
+
+    function beginAssistantResponseWait() {
+        /* Snapshot the current assistant answer BEFORE submitting a new prompt.
+         * A previously rendered Read Aloud toolbar is never proof that the next
+         * answer completed, even after the network stream has ended. */
+        const previousRoot = getLatestAssistantMessageRoot();
+        const previousKey = getAssistantMessageKey(previousRoot);
+        const previousText = getAssistantResponseText(previousRoot);
+        resetAssistantResponseWait();
+        assistantResponseBaselineKey = previousKey;
+        assistantResponseBaselineText = previousText;
+        assistantResponseBaselineReadAloudButton = previousRoot ? getFixedReadAloudSlotButton(previousRoot) : null;
+        triggerReadAloudFailureLatched = false;
+        waitingForNewAssistantResponse = true;
+        responsePipelineActive = true;
+        assistantResponseWaitStartedAt = now();
+        assistantResponsePerformanceStart = typeof performance !== 'undefined' ? performance.now() : 0;
+        logDeveloperEvent('ASSISTANT', 'Waiting current /backend-api/f/conversation lifecycle');
+    }
+
+    function isConversationResourceUrl(value) {
+        try {
+            return new URL(String(value || ''), location.href).pathname === '/backend-api/f/conversation';
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function markAssistantConversationNetworkPhase(phase, source) {
+        if (!waitingForNewAssistantResponse) return;
+        if (phase === 'start') {
+            if (!assistantResponseNetworkStarted) {
+                assistantResponseNetworkStarted = true;
+                logDeveloperEvent('ASSISTANT', 'Conversation stream started via ' + source);
+            }
+            return;
+        }
+        if (phase !== 'complete') return;
+        assistantResponseNetworkStarted = true;
+        if (!assistantResponseNetworkCompleted) {
+            assistantResponseNetworkCompleted = true;
+            assistantResponseNetworkCompletedAt = now();
+            assistantResponseTargetRoot = getLatestAssistantMessageRoot();
+            logDeveloperEvent('ASSISTANT', 'Conversation stream completed via ' + source);
+        }
+    }
+
+    function inspectCompletedConversationPerformanceEntries() {
+        if (!waitingForNewAssistantResponse || assistantResponseNetworkCompleted || typeof performance === 'undefined') return;
+        let entries = [];
+        try {
+            entries = performance.getEntriesByType('resource') || [];
+        } catch (error) {
+            return;
+        }
+        for (let index = entries.length - 1; index >= 0; index -= 1) {
+            const entry = entries[index];
+            if (!entry || !isConversationResourceUrl(entry.name)) continue;
+            if (assistantResponsePerformanceStart && Number(entry.startTime || 0) + 150 < assistantResponsePerformanceStart) continue;
+            if (Number(entry.responseEnd || 0) <= Number(entry.startTime || 0)) continue;
+            markAssistantConversationNetworkPhase('complete', 'PerformanceResourceTiming');
+            return;
+        }
+    }
+
+    function enterCommonResponsePipelineFromSend(reason) {
+        if (!state.fullFlowEnabled || waitingForNewAssistantResponse || responsePipelineActive) return false;
+        beginAssistantResponseWait();
+        armNextCycleAfterSend(reason || 'SEND detected / waiting response');
+        logDeveloperEvent('SEND', (reason || 'SEND detected') + '; entering common response pipeline');
+        return true;
+    }
+
+    function installPromptSendTriggerBridge() {
+        if (window.__CGAS_PROMPT_SEND_TRIGGER_LISTENER__) return;
+        window.__CGAS_PROMPT_SEND_TRIGGER_LISTENER__ = true;
+
+        document.addEventListener('click', (event) => {
+            if (!state.fullFlowEnabled || waitingForNewAssistantResponse || responsePipelineActive) return;
+            const target = event && event.target && event.target.closest
+                ? event.target.closest('button,[role="button"]')
+                : null;
+            if (!target || closestOrNull(target, '#' + WIDGET_ID)) return;
+            const sendButton = findSendButton();
+            if (sendButton && (target === sendButton || sendButton.contains(target) || target.contains(sendButton))) {
+                enterCommonResponsePipelineFromSend('Manual Send button');
+            }
+        }, true);
+
+        document.addEventListener('submit', (event) => {
+            if (!state.fullFlowEnabled || waitingForNewAssistantResponse || responsePipelineActive) return;
+            const composerRoot = findComposerRoot();
+            const form = event && event.target;
+            if (!form || !composerRoot) return;
+            if (form === composerRoot || form.contains(composerRoot) || composerRoot.contains(form)) {
+                enterCommonResponsePipelineFromSend('Manual prompt submit');
+            }
+        }, true);
+    }
+
+    function installAssistantConversationLifecycleBridge() {
+        if (window.__CGAS_CONVERSATION_LIFECYCLE_LISTENER__) return;
+        window.__CGAS_CONVERSATION_LIFECYCLE_LISTENER__ = true;
+
+        document.addEventListener('cgas-chatgpt-conversation-network', (event) => {
+            const detail = event && event.detail && typeof event.detail === 'object' ? event.detail : {};
+            const eventAt = Number(detail.at || 0);
+
+            /* A normal manual Send and Send Dictated Message both create the same
+             * ChatGPT conversation POST.  When Full Flow is active, that network
+             * start is the canonical "a SEND happened" trigger. */
+            if (detail.phase === 'start' && state.fullFlowEnabled && !waitingForNewAssistantResponse) {
+                enterCommonResponsePipelineFromSend('Conversation POST detected');
+            }
+
+            if (assistantResponseWaitStartedAt && eventAt && eventAt + 1500 < assistantResponseWaitStartedAt) return;
+            if (detail.phase === 'start') markAssistantConversationNetworkPhase('start', 'MAIN fetch');
+            if (detail.phase === 'complete') markAssistantConversationNetworkPhase('complete', 'MAIN fetch');
+        });
+
+        if (typeof PerformanceObserver === 'function') {
+            try {
+                assistantResponsePerformanceObserver = new PerformanceObserver((list) => {
+                    if (!waitingForNewAssistantResponse) return;
+                    for (const entry of list.getEntries()) {
+                        if (!entry || !isConversationResourceUrl(entry.name)) continue;
+                        if (assistantResponsePerformanceStart && Number(entry.startTime || 0) + 150 < assistantResponsePerformanceStart) continue;
+                        markAssistantConversationNetworkPhase('complete', 'PerformanceObserver');
+                    }
+                });
+                assistantResponsePerformanceObserver.observe({ type: 'resource', buffered: true });
+            } catch (error) {
+                assistantResponsePerformanceObserver = null;
+            }
+        }
+
+        try {
+            chrome.runtime.sendMessage({ type: 'CGAS_INSTALL_CONVERSATION_NETWORK_HOOK' }, (reply) => {
+                const runtimeError = chrome.runtime.lastError;
+                if (runtimeError) {
+                    logDeveloperEvent('ASSISTANT', 'MAIN network hook unavailable; PerformanceResourceTiming fallback active');
+                    return;
+                }
+                if (reply && reply.ok) logDeveloperEvent('ASSISTANT', 'MAIN conversation network hook ready');
+            });
+        } catch (error) {
+            logDeveloperEvent('ASSISTANT', 'MAIN network hook request failed; PerformanceResourceTiming fallback active');
+        }
+    }
+
+    /* 9.0.7: First-cycle-after-reload recovery. ChatGPT sometimes promotes
+     * the assistant markdown into the same article/turn as the final user
+     * message. Comparing the promoted article itself with that user (as in
+     * 9.0.6) rejects the NEW reply even after the stream has completed.
+     * Examine the nested assistant content before using an article boundary,
+     * and accept a settled last response only if it has changed since SEND
+     * and exposes an actual idle Read Aloud control. Never accept the old
+     * assistant baseline simply because the network request has finished. */
+    function findCurrentAssistantAfterLatestUser() {
+        const users = safeQueryAll(document,
+            '[data-message-author-role="user"], [data-testid="user-message"]');
+        const lastUserNode = users[users.length - 1] || null;
+        const afterUser = (root) => {
+            if (!lastUserNode || !lastUserNode.compareDocumentPosition) return true;
+            /* A promoted article may contain previous assistant turns, the
+             * latest user and the current answer. Select the LAST nested
+             * assistant/prose node that actually follows the latest user. */
+            if (root.contains && root.contains(lastUserNode) && root.querySelectorAll) {
+                const nested = Array.from(root.querySelectorAll(
+                    '[data-message-author-role="assistant"], [data-testid*="assistant" i], .markdown, .prose'));
+                return nested.some((node) =>
+                    !closestOrNull(node, '[data-message-author-role="user"], [data-testid="user-message"]') &&
+                    Boolean(lastUserNode.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING));
+            }
+            const assistantAnchor = root.matches && root.matches('[data-message-author-role="assistant"], [data-testid*="assistant" i]')
+                ? root : root.querySelector && root.querySelector('[data-message-author-role="assistant"], [data-testid*="assistant" i]');
+            const comparable = assistantAnchor || root;
+            if (comparable === lastUserNode || comparable.contains && comparable.contains(lastUserNode)) return false;
+            return Boolean(lastUserNode.compareDocumentPosition(comparable) & Node.DOCUMENT_POSITION_FOLLOWING);
+        };
+        const changedSinceSend = (root) => {
+            if (!root) return false;
+            const text = getAssistantResponseText(root);
+            if (!text) return false;
+            const key = getAssistantMessageKey(root);
+            /* A different wrapper around the OLD message is not a new answer.
+             * Require different actual response text when a baseline exists. */
+            if (assistantResponseBaselineText && text === assistantResponseBaselineText) return false;
+            if (!assistantResponseBaselineText && assistantResponseBaselineKey && key === assistantResponseBaselineKey) return false;
+            return true;
+        };
+        /* If an article contains the latest USER but we cannot locate any
+         * new assistant node within it, its toolbar MUST be a new control,
+         * not the pre-SEND button of the previous response. */
+        const freshReadAloudControl = (root) => {
+            const currentSlot = root ? getFixedReadAloudSlotButton(root) : null;
+            return Boolean(currentSlot &&
+                (!assistantResponseBaselineReadAloudButton ||
+                    currentSlot !== assistantResponseBaselineReadAloudButton));
+        };
+        const roots = getAssistantMessageRoots();
+        for (let i = roots.length - 1; i >= 0; i -= 1) {
+            if (changedSinceSend(roots[i]) && afterUser(roots[i])) return roots[i];
+        }
+
+        /* The current reply may be represented only by its newest action row
+         * while the semantic assistant list still points to the old turn. */
+        const actionRoot = findLatestAssistantActionRowRoot();
+        if (changedSinceSend(actionRoot) &&
+            isLastAssistantReadAloudReadySignalAvailable(actionRoot) &&
+            (afterUser(actionRoot) ||
+                /* Mixed/promoted user+assistant article: a genuinely new idle
+                 * toolbar and changed reply are stronger than its parent tag. */
+                !lastUserNode || actionRoot.contains && actionRoot.contains(lastUserNode) &&
+                    freshReadAloudControl(actionRoot))) {
+            return actionRoot;
+        }
+
+        /* Finally, an already-completed current reply may be in a promoted
+         * container with no stable assistant-author marker. This guarded
+         * recovery is restricted to the final semantic root after the network
+         * stream finishes, with changed response text AND its own idle control.
+         * Never use the stale pre-SEND answer for triggered playback. */
+        const newestRoot = roots.length ? roots[roots.length - 1] : null;
+        if (changedSinceSend(newestRoot) &&
+            (!lastUserNode || afterUser(newestRoot) || newestRoot.contains &&
+                newestRoot.contains(lastUserNode) && freshReadAloudControl(newestRoot)) &&
+            isLastAssistantReadAloudReadySignalAvailable(newestRoot) &&
+            !isAssistantGenerating()) {
+            return newestRoot;
+        }
+        return null;
+    }
+
+    function isNewAssistantResponseComplete() {
+        if (!waitingForNewAssistantResponse) return false;
+
+        inspectCompletedConversationPerformanceEntries();
+
+        if (!assistantResponseNetworkCompleted) {
+            if (assistantResponseNetworkStarted || isAssistantGenerating()) {
+                setStatus('Assistant thinking / writing');
+            } else {
+                setStatus('Waiting assistant response');
+            }
+            return false;
+        }
+
+        if (now() - assistantResponseNetworkCompletedAt < 250) {
+            setStatus('Assistant response settling');
+            return false;
+        }
+
+        const defaultRoot = getLatestAssistantMessageRoot();
+        const currentSemanticRoot = state.triggerReadAloudEnabled
+            ? findCurrentAssistantAfterLatestUser() : null;
+        const root = state.triggerReadAloudEnabled ? currentSemanticRoot : defaultRoot;
+        if (!root) {
+            if (!state.triggerReadAloudEnabled &&
+                now() - assistantResponseNetworkCompletedAt >= 1800 &&
+                !isAssistantGenerating()) {
+                waitingForNewAssistantResponse = false;
+                logDeveloperEvent('ASSISTANT', 'Network response settled; assistant root missing; ReadAloud OFF bypass');
+                return true;
+            }
+            if (!assistantResponseMissingTargetLogged &&
+                now() - assistantResponseNetworkCompletedAt >= 1800) {
+                assistantResponseMissingTargetLogged = true;
+                const latest = getLatestAssistantMessageRoot();
+                logDeveloperEvent('ASSISTANT', 'Current target diagnostic: latest=' +
+                    getAssistantMessageKey(latest) + '; latestText=' +
+                    getAssistantResponseText(latest).length + '; baseline=' +
+                    assistantResponseBaselineKey + '; baselineText=' +
+                    assistantResponseBaselineText.length + '; users=' +
+                    safeQueryAll(document, '[data-message-author-role="user"], [data-testid="user-message"]').length +
+                    '; assistantRoots=' + getAssistantMessageRoots().length);
+            }
+            setStatus('Waiting current assistant message');
+            return false;
+        }
+        const currentKey = getAssistantMessageKey(root);
+        const currentText = getAssistantResponseText(root);
+        if (
+            (assistantResponseBaselineKey || assistantResponseBaselineText) &&
+            currentKey === assistantResponseBaselineKey &&
+            currentText === assistantResponseBaselineText
+        ) {
+            /* The stream may finish while the old response is still the only
+             * assistant turn in the DOM. Never read that old answer again. */
+            /* For Trigger Read Aloud OFF only: the ChatGPT network lifecycle is
+             * complete, but its newest assistant DOM identity may remain stale.
+             * After a bounded settling interval, resume the next dictation
+             * without depending on an outdated toolbar/semantic hash. */
+            if (!state.triggerReadAloudEnabled &&
+                now() - assistantResponseNetworkCompletedAt >= 1800 &&
+                !isAssistantGenerating()) {
+                waitingForNewAssistantResponse = false;
+                assistantResponseTargetRoot = root;
+                logDeveloperEvent('ASSISTANT', 'Network response settled; stale assistant DOM identity bypassed with ReadAloud OFF');
+                return true;
+            }
+            setStatus('Waiting NEW assistant response');
+            return false;
+        }
+        if (!state.triggerReadAloudEnabled &&
+            !isAssistantGenerating() &&
+            now() - assistantResponseNetworkCompletedAt >= 1800) {
+            assistantResponseTargetRoot = root;
+            waitingForNewAssistantResponse = false;
+            logDeveloperEvent('ASSISTANT', 'Response settled; ReadAloud OFF does not require toolbar');
             return true;
         }
+        if (!isLastAssistantReadAloudReadySignalAvailable(root)) {
+            setStatus('Writing / waiting Read Aloud button');
+            return false;
+        }
 
-        return Boolean(findMoreActionsButton(messageRoot));
+        assistantResponseTargetRoot = root;
+        waitingForNewAssistantResponse = false;
+        logDeveloperEvent('ASSISTANT', currentSemanticRoot && currentSemanticRoot !== defaultRoot
+            ? 'Writing complete; NEW semantic assistant after user found; response pinned'
+            : 'Writing complete; current Read Aloud control available; response pinned');
+        return true;
     }
 
-
     function resetAutoReadAloudFlow() {
-        autoReadAloudClickedAt = 0;
-        autoReadAloudSeenStop = false;
-        autoReadAloudAttemptCount = 0;
-        autoReadAloudMessageKey = '';
-        autoReadAloudCompletedMessageKey = '';
-        autoReadAloudLastMenuInspectAt = 0;
-        autoReadAloudLastKnownMenuMode = '';
+        if (!waitingForNewAssistantResponse) resetAssistantResponseWait();
     }
 
     async function waitForTriggeredReadAloudBeforeAutoStart() {
-        if (!state.fullFlowEnabled) {
+        if (!state.fullFlowEnabled) return false;
+        if (!state.triggerReadAloudEnabled) return true;
+        if (triggerReadAloudFailureLatched) return false;
+
+        if (waitingForNewAssistantResponse && !isNewAssistantResponseComplete()) {
             return false;
         }
-        if (!state.triggerReadAloudEnabled) {
-            return true;
-        }
 
-        const messageRoot = getLastAssistantMessageRoot();
-        const messageKey = getAssistantMessageKey(messageRoot);
-        if (!messageRoot || !messageKey) {
+        /* A pinned root may already be the penultimate assistant response.
+         * Resolve the newest DOM turn at the moment the trigger fires. */
+        const pinnedRoot = assistantResponseTargetRoot;
+        const messageRoot = pinnedRoot && pinnedRoot.isConnected !== false
+            ? pinnedRoot : findCurrentAssistantAfterLatestUser();
+        if (!messageRoot) {
+            setStatus('Waiting current assistant response');
+            return false;
+        }
+        if (waitingForNewAssistantResponse || isAssistantGenerating()) {
+            setStatus('Waiting newest assistant response');
+            return false;
+        }
+        if (!isLastAssistantReadAloudReadySignalAvailable(messageRoot)) {
             setStatus('Waiting ReadAloud');
             return false;
         }
 
-        if (autoReadAloudCompletedMessageKey === messageKey) {
-            state.pageReadAloudActive = false;
-            setStatus('ReadAloud already done / start voice');
-            return true;
-        }
-
-        if (autoReadAloudMessageKey && autoReadAloudMessageKey !== messageKey) {
-            resetAutoReadAloudFlow();
-        }
-
-        const stopVisible = detectVisiblePageReadAloudStop();
-        if (stopVisible) {
-            autoReadAloudSeenStop = true;
-            autoReadAloudLastKnownMenuMode = 'stop';
-            state.pageReadAloudActive = true;
-            setStatus('Trigger ReadAloud playing');
+        /* If the user already started Read Aloud manually, its watcher owns
+         * completion; never click the same toggle again to stop playback. */
+        if (manualReadAloudStartPending || detectVisiblePageReadAloudStop()) {
+            autoStartArmed = false;
+            readAloudFlowInProgress = true;
+            setStatus('ReadAloud already active / waiting end');
             return false;
         }
 
-        if (autoReadAloudClickedAt > 0 && autoReadAloudMessageKey === messageKey) {
-            const ageMs = now() - autoReadAloudClickedAt;
-
-            if (now() - autoReadAloudLastMenuInspectAt > 1300) {
-                autoReadAloudLastMenuInspectAt = now();
-                autoReadAloudLastKnownMenuMode = await inspectLastAssistantReadAloudMenuMode(messageRoot);
-            }
-
-            if (autoReadAloudLastKnownMenuMode === 'stop') {
-                autoReadAloudSeenStop = true;
-                state.pageReadAloudActive = true;
-                setStatus('Trigger ReadAloud playing');
-                return false;
-            }
-
-            if (autoReadAloudSeenStop && autoReadAloudLastKnownMenuMode === 'start') {
-                autoReadAloudCompletedMessageKey = messageKey;
-                state.pageReadAloudActive = false;
-                setStatus('ReadAloud done / start voice');
-                return true;
-            }
-
-            if (!autoReadAloudSeenStop && ageMs < 9000) {
-                setStatus('Waiting ReadAloud end');
-                return false;
-            }
-
-            /* Anti-loop guard: once this assistant message has been clicked,
-               never click ReadAloud for the same message again. If the Stop
-               state was not observable, consume this trigger and move on. */
-            autoReadAloudCompletedMessageKey = messageKey;
-            state.pageReadAloudActive = false;
-            setStatus('ReadAloud trigger consumed / start voice');
-            return true;
-        }
-
-        if (!isLastAssistantReadAloudReadySignalAvailable()) {
-            setStatus('Waiting ReadAloud');
+        /* Automatic Trigger ReadAloud deliberately uses the exact same routine
+         * as the manual "Read Aloud last message" button. The manual playback
+         * watcher owns Read Aloud -> Stop -> Read Aloud and resumes Full Flow. */
+        autoStartArmed = false;
+        readAloudFlowInProgress = true;
+        logDeveloperEvent('ASSISTANT', 'Response complete; calling manual ReadAloud Last routine');
+        const started = await startPageReadAloudPlayback(messageRoot);
+        if (!started) {
+            /* One failed Read Aloud attempt ends this response's automatic
+             * flow. Do not re-arm Dictate or re-trigger the same toolbar every
+             * polling tick: that caused the repeated 06:19:45–06:19:51 loop. */
+            triggerReadAloudFailureLatched = true;
+            readAloudFlowInProgress = false;
+            responsePipelineActive = false;
+            autoStartArmed = false;
+            cycleDone = true;
+            waitingUserInputAfterResponse = true;
+            assistantResponseTargetRoot = null;
+            waitingForNewAssistantResponse = false;
+            resetAssistantResponseWait();
+            logDeveloperEvent('READ_ALOUD', 'Automatic playback failed; retry latched; PROMPT waiting (no Dictate)');
+            setStatus('Trigger ReadAloud failed / waiting at PROMPT');
+            updateWidget();
             return false;
         }
 
-        const ok = await clickChatGPTReadAloudMenuAction('start');
-        if (!ok) {
-            setStatus('Trigger ReadAloud not found');
-            return false;
-        }
-        autoReadAloudClickedAt = now();
-        autoReadAloudSeenStop = false;
-        autoReadAloudAttemptCount = 1;
-        autoReadAloudMessageKey = messageKey;
-        autoReadAloudCompletedMessageKey = '';
-        autoReadAloudLastMenuInspectAt = 0;
-        autoReadAloudLastKnownMenuMode = '';
-        state.pageReadAloudActive = true;
-        setStatus('Trigger ReadAloud started');
-        updateWidget();
+        assistantResponseTargetRoot = null;
+        resetAssistantResponseWait();
         return false;
     }
 
@@ -2416,7 +3996,9 @@
         pendingSendAfterV = false;
         vClickedThisCycle = false;
         sendAttemptedThisCycle = false;
-        autoStartArmed = Boolean(state.triggerReadAloudEnabled || state.enabled);
+        /* Every sent Full Flow prompt must reach the assistant-response end gate.
+         * Trigger ReadAloud and New Transcription + TOS are decisions AFTER that gate. */
+        autoStartArmed = true;
         autoStartBusy = false;
         lastAutoStartAt = 0;
         lastAutoStartCheckAt = 0;
@@ -2444,10 +4026,6 @@
         if (!state.fullFlowEnabled || !autoStartArmed) {
             return false;
         }
-        if (isReadAloudPlaybackActive()) {
-            setStatus('Waiting ReadAloud end / voice start blocked');
-            return false;
-        }
         if (autoStartBusy || now() - lastAutoStartAt < 1800) {
             setStatus('Voice start pending');
             return false;
@@ -2459,7 +4037,17 @@
         lastAutoStartCheckAt = now();
 
         const bypassResponseGate = skipReadAloudGateOnce;
+        let triggeredReadAloudCompleted = false;
         if (bypassResponseGate) {
+            /* Enabling Full Flow or NT TOS during a pre-existing ChatGPT answer
+             * must never click Dictate until Thinking/Writing/Read Aloud ends.
+             * Keep the bypass armed; it only skips a second automatic RA cycle. */
+            if (waitingForNewAssistantResponse || responsePipelineActive ||
+                readAloudFlowInProgress || manualReadAloudStartPending ||
+                isAssistantGenerating() || detectVisiblePageReadAloudStop()) {
+                setStatus('Waiting Thinking / Writing / ReadAloud before Dictate');
+                return false;
+            }
             skipReadAloudGateOnce = false;
             resetAutoReadAloudFlow();
         } else if (state.triggerReadAloudEnabled) {
@@ -2467,12 +4055,37 @@
             if (!readAloudGateOk) {
                 return false;
             }
-        } else if (!isLastAssistantReadAloudReadySignalAvailable()) {
-            setStatus('Waiting ReadAloud');
+            triggeredReadAloudCompleted = true;
+        } else if (waitingForNewAssistantResponse) {
+            if (!isNewAssistantResponseComplete()) {
+                setStatus('Waiting new assistant response / ReadAloud OFF');
+                return false;
+            }
+            logDeveloperEvent('ASSISTANT', 'Response complete; ReadAloud skipped');
+            responsePipelineActive = false;
+        }
+
+        if (!bypassResponseGate && !triggeredReadAloudCompleted && isReadAloudPlaybackActive()) {
+            setStatus('Waiting ReadAloud end / voice start blocked');
+            return false;
+        }
+
+        /* Final mutex immediately before any possible Dictate click. Covers
+         * manual playback, delayed streaming UI and toggles changed mid-flow. */
+        if (waitingForNewAssistantResponse || responsePipelineActive ||
+            readAloudFlowInProgress || manualReadAloudStartPending ||
+            isAssistantGenerating() || detectVisiblePageReadAloudStop()) {
+            setStatus('Dictate blocked: assistant or ReadAloud busy');
+            return false;
+        }
+
+        if (!state.fullFlowEnabled) {
+            autoStartArmed = false;
             return false;
         }
 
         if (!state.enabled) {
+            responsePipelineActive = false;
             autoStartArmed = false;
             cycleDone = true;
             waitingUserInputAfterResponse = true;
@@ -2482,16 +4095,33 @@
             return true;
         }
 
-        const startButton = findVoiceStartButton();
+        if (triggeredReadAloudCompleted) {
+            state.pageReadAloudActive = false;
+            await sleep(320);
+        }
+
+        let startButton = findVoiceStartButton();
         if (!startButton) {
-            setStatus('Start mic not found');
+            const composerRoot = findComposerRoot();
+            if (composerRoot && typeof composerRoot.scrollIntoView === 'function') {
+                try { composerRoot.scrollIntoView({ block: 'end', inline: 'nearest' }); }
+                catch (error) { logRuntimeError('composer reveal after ReadAloud failed', error); }
+                await sleep(220);
+                startButton = findVoiceStartButton();
+            }
+        }
+        if (!startButton) {
+            logReadAloudDiagnostic('TOS start failed: Dictate button missing');
+            setStatus('Dictate not found');
             return false;
         }
 
         autoStartBusy = true;
         lastAutoStartAt = now();
         try {
-            clickLikeUser(startButton);
+            const micClicked = clickLikeUser(startButton);
+            logReadAloudDiagnostic('Dictate click=' + micClicked);
+            if (!micClicked) { setStatus('Dictate click failed'); return false; }
             autoStartArmed = false;
             cycleDone = false;
             waitingUserInputAfterResponse = false;
@@ -2506,11 +4136,15 @@
             draftTranscriptPending = false;
             resetSilenceState();
             resetAutoReadAloudFlow();
+
+            /* v8.12.25: restore the proven v8.12.18 TOS start behavior.
+             * Dictate is clicked first; the TOS monitor starts only when the
+             * ChatGPT active-dictation finish control is present. */
             setStatus('Voice start clicked / waiting TOS');
             return true;
         } catch (error) {
             logRuntimeError('autoStartVoiceRecordingIfReady failed', error);
-            setStatus('Auto voice start failed');
+            setStatus('Dictate start failed');
             return false;
         } finally {
             autoStartBusy = false;
@@ -2528,7 +4162,7 @@
             }
 
             /* Response / ReadAloud flow is independent from TOS. */
-            if (autoStartArmed) {
+            if (autoStartArmed && !draftTranscriptPending) {
                 resetSilenceState();
                 if (audioAnalyser || audioStream || audioContext) {
                     stopAudioMonitor();
@@ -2537,8 +4171,16 @@
                 return;
             }
 
+            /* Hard mutex retained from the current flow: TOS is forbidden
+             * during the response pipeline and Read Aloud. */
+            if (responsePipelineActive || readAloudFlowInProgress || manualReadAloudStartPending || isReadAloudPlaybackActive()) {
+                if (audioAnalyser || audioStream || audioContext) stopAudioMonitor();
+                resetSilenceState();
+                return;
+            }
+
             /* TOS controls only active voice recording and automatic V click. */
-            if (!state.enabled || cycleDone) {
+            if (!state.enabled || cycleDone || draftTranscriptPending) {
                 return;
             }
 
@@ -2612,9 +4254,22 @@
                 return;
             }
 
+            if (!state.enabled && !pendingSendAfterV && !waitingForNewAssistantResponse) {
+                manualVoiceSessionSeen = false;
+                return;
+            }
+
+            if (responsePipelineActive || readAloudFlowInProgress || manualReadAloudStartPending || isReadAloudPlaybackActive()) {
+                manualVoiceSessionSeen = false;
+                return;
+            }
+
+            // AutoSend OFF means HARD WAIT. ChatGPT's dictation UI can linger
+            // briefly after transcription; never mistake it for a new recording.
+            if (draftTranscriptPending && !pendingSendAfterV) return;
             const voiceActive = hasActiveVoiceRecordingEvidence();
             if (voiceActive) {
-                if (cycleDone || sendAttemptedThisCycle || draftTranscriptPending) {
+                if (cycleDone || sendAttemptedThisCycle) {
                     cycleDone = false;
                     sendAttemptedThisCycle = false;
                     vClickedThisCycle = false;
@@ -2699,6 +4354,7 @@
                 stopAudioMonitor();
                 resetSilenceState();
                 resetAutoReadAloudFlow();
+                logDeveloperEvent('TRANSCRIPTION', 'Written into prompt; AutoSend OFF; waiting for manual user action; characters=' + text.length);
                 setStatus('Transcript ready / AutoSend NO');
                 updateWidget();
                 return;
@@ -2712,6 +4368,8 @@
 
             sendAttemptedThisCycle = true;
             try {
+                beginAssistantResponseWait();
+                logDeveloperEvent('SEND', 'AutoSend ON; submitting composed prompt; length=' + text.length + '; waiting current conversation stream');
                 sendButton.click();
                 lastSentHash = textHash;
                 lastSendAt = now();
@@ -2759,13 +4417,47 @@
 
 
     async function stopPageReadAloudPlayback(statusMessage) {
-        const ok = await clickChatGPTReadAloudMenuAction('stop');
+        ++manualReadAloudSession;
+        manualReadAloudStartPending = false;
+        const pinned = lastReadAloudToggleButton && lastReadAloudToggleButton.isConnected
+            ? lastReadAloudToggleButton : null;
+        const pinnedDescriptor = pinned ? getReadAloudActionDescriptor(pinned) : '';
+        const pinnedSignature = pinned ? readAloudToggleSignature(pinned) : '';
+        const pinnedIsStop = Boolean(pinned && (
+            readAloudActionText('stop').test(pinnedDescriptor) ||
+            (lastReadAloudToggleIdleSignature && pinnedSignature &&
+             pinnedSignature !== lastReadAloudToggleIdleSignature &&
+             !readAloudActionText('start').test(pinnedDescriptor))));
+        let ok = false;
+        if (pinnedIsStop) ok = clickLikeUser(pinned);
+        if (!ok && lastReadAloudToggleMessageKey) {
+            const roots = safeQueryAll(document,
+                '[data-testid*="conversation-turn"], [data-message-author-role="assistant"]');
+            const rememberedRoot = roots.find((root) =>
+                getAssistantMessageKey(root) === lastReadAloudToggleMessageKey) || manualReadAloudTargetRoot;
+            const candidate = getFixedReadAloudSlotButton(rememberedRoot);
+            if (candidate) {
+                const descriptor = getReadAloudActionDescriptor(candidate);
+                const signature = readAloudToggleSignature(candidate);
+                const candidateIsStop = readAloudActionText('stop').test(descriptor) ||
+                    (lastReadAloudToggleIdleSignature && signature &&
+                     signature !== lastReadAloudToggleIdleSignature &&
+                     !readAloudActionText('start').test(descriptor));
+                if (candidateIsStop) ok = clickLikeUser(candidate);
+            }
+        }
         if (!ok) {
-            setStatus('Stop ReadAloud not found');
+            state.pageReadAloudActive = false;
+            setStatus('Stop ReadAloud: no active playback');
             return false;
         }
         state.pageReadAloudActive = false;
+        readAloudFlowInProgress = false;
         state.pageReadAloudLastActionAt = now();
+        lastReadAloudToggleActiveSignature = '';
+        lastReadAloudToggleViewportPoint = null;
+        lastReadAloudToggleClickedAt = 0;
+        manualReadAloudTargetRoot = null;
         resetAutoReadAloudFlow();
 
         /* Manual Stop consumes the current triggered playback. If the flow is
@@ -2775,16 +4467,22 @@
 
         updateWidget();
         setStatus(statusMessage || 'ReadAloud stopped');
-        window.setTimeout(syncPageReadAloudState, 700);
         continueFullFlowAfterManualReadAloud('ReadAloud stopped / start voice');
         return true;
     }
 
     async function setFullFlowEnabled(nextEnabled, statusMessage) {
         state.fullFlowEnabled = Boolean(nextEnabled);
+        if (state.fullFlowEnabled) developerCycleId += 1;
+        logDeveloperEvent('FULL_FLOW', (state.fullFlowEnabled ? 'ACTIVATED' : 'NOT ACTIVATED') + '; cycle=' + developerCycleId + '; TOS=' + state.enabled + '; AutoSend=' + state.sendEnabled + '; TriggerRA=' + state.triggerReadAloudEnabled);
         await saveStatePatch({ fullFlowEnabled: state.fullFlowEnabled });
 
         if (!state.fullFlowEnabled) {
+            ++fullFlowActivationSerial;
+            waitingForNewAssistantResponse = false;
+            responsePipelineActive = false;
+            readAloudFlowInProgress = false;
+            resetAssistantResponseWait();
             cycleDone = true;
             pendingSendAfterV = false;
             pendingSendStartedAt = 0;
@@ -2802,33 +4500,46 @@
             if (state.pageReadAloudActive || detectVisiblePageReadAloudStop()) {
                 await stopPageReadAloudPlayback('Full Flow NO / ReadAloud stopped');
             }
+            /* Global deactivation stops an active recording too. Never send the
+               resulting draft: pending sends and automatic monitors are OFF. */
+            const recordingStop = findTranscriptionFinishButton();
+            if (recordingStop && hasActiveVoiceRecordingEvidence()) {
+                try { clickLikeUser(recordingStop); }
+                catch (error) { logRuntimeError('Full Flow OFF voice stop failed', error); }
+            }
             setStatus(statusMessage || 'FULL FLOW NO');
         } else {
-            state.enabled = true;
-            state.sendEnabled = true;
-            state.triggerReadAloudEnabled = true;
-            await saveStatePatch({
-                enabled: true,
-                sendEnabled: true,
-                triggerReadAloudEnabled: true
-            });
-
-            cycleDone = false;
+            /* Full Flow never changes the independent NT TOS choice.
+             * NT TOS OFF -> stay at PROMPT.
+             * NT TOS ON  -> click Dictate and start the TOS cycle. */
+            cycleDone = !state.enabled;
             vClickedThisCycle = false;
             sendAttemptedThisCycle = false;
             pendingSendAfterV = false;
             draftTranscriptPending = false;
             lastComposerText = '';
             composerStableSince = 0;
-            waitingUserInputAfterResponse = false;
-            manualVoiceSessionSeen = hasActiveVoiceRecordingEvidence();
-            autoStartArmed = !manualVoiceSessionSeen;
+            waitingUserInputAfterResponse = !state.enabled;
+            responsePipelineActive = false;
+            readAloudFlowInProgress = false;
+            manualVoiceSessionSeen = state.enabled && hasActiveVoiceRecordingEvidence();
+            autoStartArmed = Boolean(state.enabled && !manualVoiceSessionSeen);
             skipReadAloudGateOnce = autoStartArmed;
+            if (autoStartArmed) state.pageReadAloudActive = false;
             autoStartBusy = false;
             lastAutoStartAt = 0;
             lastAutoStartCheckAt = 0;
             resetAutoReadAloudFlow();
-            setStatus(statusMessage || (autoStartArmed ? 'FULL FLOW YES / start voice' : 'FULL FLOW YES / TOS active'));
+            logReadAloudDiagnostic('Full Flow activated; NT TOS=' + state.enabled + '; AutoSend=' + state.sendEnabled + '; Dictate=' + Boolean(findVoiceStartButton()) + '; armed=' + autoStartArmed);
+            setStatus(statusMessage || (state.enabled
+                ? (autoStartArmed ? 'FULL FLOW YES / Dictate' : 'FULL FLOW YES / TOS active')
+                : 'FULL FLOW YES / PROMPT'));
+            if (autoStartArmed) {
+                window.setTimeout(() => {
+                    if (!state.fullFlowEnabled || !state.enabled || !autoStartArmed) return;
+                    autoStartVoiceRecordingIfReady().catch((error) => logRuntimeError('Initial Dictate startup failed', error));
+                }, 100);
+            }
         }
         updateWidget();
     }
@@ -2841,13 +4552,18 @@
         const wasEnabled = state.enabled;
         const requestedEnabled = Boolean(nextEnabled);
 
-        if (requestedEnabled && !wasEnabled && isReadAloudPlaybackActive()) {
-            setStatus('New Transcription blocked / ReadAloud active');
+        if (requestedEnabled && !wasEnabled && (responsePipelineActive || readAloudFlowInProgress || (!skipReadAloudGateOnce && isReadAloudPlaybackActive()))) {
+            /* The user may pre-arm NT TOS during a response/ReadAloud, but Dictate
+             * itself is forbidden until the pipeline returns to PROMPT. */
+            state.enabled = true;
+            await saveStatePatch({ enabled: true });
+            setStatus('NT TOS ON / waiting PROMPT');
             updateWidget();
-            return false;
+            return true;
         }
 
         state.enabled = requestedEnabled;
+        logDeveloperEvent('TOS', 'New Transcription + TOS=' + state.enabled + '; fullFlow=' + state.fullFlowEnabled);
         await saveStatePatch({ enabled: state.enabled });
 
         if (state.enabled && state.fullFlowEnabled) {
@@ -2857,15 +4573,11 @@
             const prearmCurrentResponseCycle = Boolean(
                 !wasEnabled &&
                 !voiceActive &&
-                autoStartArmed &&
-                !waitingUserInputAfterResponse &&
-                !draftTranscriptPending
+                (responsePipelineActive || readAloudFlowInProgress || waitingForNewAssistantResponse)
             );
 
             if (prearmCurrentResponseCycle) {
-                /* The assistant response or its triggered ReadAloud is still pending.
-                   Accept YES now, but do not start the microphone yet. */
-                setStatus('New Transcription + TOS YES / pre-armed');
+                setStatus('NT TOS ON / waiting PROMPT');
                 updateWidget();
                 return true;
             }
@@ -2904,59 +4616,119 @@
                 resetSilenceState();
                 setStatus('New Transcription + TOS YES');
             } else if (autoStartArmed) {
-                /* A response/ReadAloud cycle is already in flight: do not reset it. */
-                setStatus('New Transcription + TOS YES / waiting response');
+                setStatus('NT TOS ON / Dictate pending');
             } else {
                 autoStartArmed = true;
-                skipReadAloudGateOnce = false;
+                skipReadAloudGateOnce = true;
                 resetSilenceState();
                 stopAudioMonitor();
-                setStatus('New Transcription + TOS YES / waiting response');
+                setStatus('NT TOS ON / Dictate');
+            }
+
+            if (!voiceActive && autoStartArmed && !responsePipelineActive && !readAloudFlowInProgress) {
+                await autoStartVoiceRecordingIfReady();
             }
         } else {
             stopAudioMonitor();
             resetSilenceState();
 
+            if (!state.enabled && state.fullFlowEnabled && (responsePipelineActive || readAloudFlowInProgress || waitingForNewAssistantResponse)) {
+                /* NT TOS OFF during Thinking/Writing/ReadAloud only changes what
+                 * happens when PROMPT returns; it must not cancel the response. */
+                cycleDone = false;
+                waitingUserInputAfterResponse = true;
+                setStatus('NT TOS OFF / waiting PROMPT');
+                updateWidget();
+                return true;
+            }
+
             const voiceActive = hasActiveVoiceRecordingEvidence();
-            if (voiceActive) {
-                manualVoiceSessionSeen = true;
-            }
-
-            const currentCycleMustContinue = Boolean(
-                pendingSendAfterV ||
-                vClickedThisCycle ||
-                sendAttemptedThisCycle ||
-                autoStartArmed ||
-                manualVoiceSessionSeen ||
-                voiceActive
-            );
-
-            if (!currentCycleMustContinue) {
-                cycleDone = true;
-            }
-
-            /* NO disables only the next automatic voice/TOS start. It must not
-               cancel transcript detection, AutoSend, response or ReadAloud already in flight. */
+            autoStartArmed = false;
+            autoStartBusy = false;
+            cycleDone = true;
+            pendingSendAfterV = false;
+            pendingSendStartedAt = 0;
+            vClickedThisCycle = false;
+            sendAttemptedThisCycle = true;
+            manualVoiceSessionSeen = false;
+            waitingUserInputAfterResponse = false;
             skipReadAloudGateOnce = false;
+            if (voiceActive) {
+                const recordingStop = findTranscriptionFinishButton();
+                if (recordingStop) {
+                    try { clickLikeUser(recordingStop); }
+                    catch (error) { logRuntimeError('TOS OFF voice stop failed', error); }
+                }
+            }
             setStatus(state.enabled ? 'TOS YES / Full Flow NO' : 'New Transcription + TOS NO');
         }
         updateWidget();
     }
 
     async function toggleEnabled() {
-        await setEnabled(!state.enabled);
+        if (state.enabled && draftTranscriptPending && !pendingSendAfterV) {
+            logDeveloperEvent('TOS', 'Manual restart from retained draft');
+            draftTranscriptPending = false;
+            cycleDone = false;
+            autoStartArmed = true;
+            autoStartBusy = false;
+            lastAutoStartAt = 0;
+            lastAutoStartCheckAt = 0;
+            manualVoiceSessionSeen = false;
+            skipReadAloudGateOnce = true;
+            vClickedThisCycle = false;
+            sendAttemptedThisCycle = false;
+            setStatus('New Transcription + TOS / manual restart');
+            updateWidget();
+            await autoStartVoiceRecordingIfReady();
+            return;
+        }
+        if (state.enabled) {
+            await setEnabled(false);
+            return;
+        }
+        await setEnabled(true);
     }
 
 
     async function setSendEnabledState(nextEnabled, statusMessage) {
+        const wasEnabled = state.sendEnabled;
         state.sendEnabled = Boolean(nextEnabled);
+        logDeveloperEvent('AUTOSEND', 'AutoSend=' + state.sendEnabled);
         await saveStatePatch({ sendEnabled: state.sendEnabled });
         updateWidget();
+
+        if (!wasEnabled && state.sendEnabled && draftTranscriptPending) {
+            const retainedText = getComposerText();
+            if (retainedText && retainedText.length >= CONFIG.minComposerLength) {
+                beginAssistantResponseWait();
+                sendAttemptedThisCycle = true;
+                const sent = await clickCurrentSendButton('AutoSend ON / sending retained transcript');
+                if (sent) {
+                    lastSentHash = hashText(retainedText);
+                    lastSendAt = now();
+                    draftTranscriptPending = false;
+                    logDeveloperEvent('AUTOSEND', 'Retained transcript sent immediately; characters=' + retainedText.length);
+                    armNextCycleAfterSend('Retained transcript sent / waiting response');
+                    return;
+                }
+                waitingForNewAssistantResponse = false;
+                resetAssistantResponseWait();
+                sendAttemptedThisCycle = false;
+                setStatus('AutoSend ON / retained transcript not sent');
+                return;
+            }
+        }
+
         setStatus(statusMessage || (state.sendEnabled ? 'SEND ON' : 'SEND OFF'));
     }
 
     async function setTriggerReadAloudEnabledState(nextEnabled, statusMessage) {
         state.triggerReadAloudEnabled = Boolean(nextEnabled);
+        logDeveloperEvent('TRIGGER_READALOUD', 'Enabled=' + state.triggerReadAloudEnabled);
+        /* Do not retain a cached older reply across OFF -> ON. */
+        assistantResponseTargetRoot = null;
+        manualReadAloudTargetRoot = null;
         resetAutoReadAloudFlow();
         await saveStatePatch({ triggerReadAloudEnabled: state.triggerReadAloudEnabled });
         updateWidget();
@@ -3098,7 +4870,7 @@
         if (state.maximized) state.minimized = false;
         await saveStatePatch({ minimized: state.minimized, maximized: state.maximized });
         updateWidget();
-        setStatus(state.maximized ? 'MAXI mode' : 'MINI mode');
+        setStatus(state.maximized ? 'MAXI mode' : (state.fullFlowEnabled ? 'FULL FLOW YES' : 'Ready'));
     }
 
     async function setMiniMode() {
@@ -3106,7 +4878,7 @@
         state.maximized = false;
         await saveStatePatch({ minimized: false, maximized: false });
         updateWidget();
-        setStatus('MINI mode');
+        setStatus(state.fullFlowEnabled ? 'FULL FLOW YES' : 'Ready');
     }
 
     async function modeDown() {
@@ -3163,6 +4935,78 @@
         return handle;
     }
 
+    const readAloudDiagnosticEvents = [];
+    const developerSessionEvents = [];
+    let developerPreviousStatus = '';
+    let developerCycleId = 0;
+    function logDeveloperEvent(category, message, level = 'INFO') {
+        const entry = new Date().toISOString() + ' [' + level + '] [' + category + '] ' + String(message);
+        developerSessionEvents.push(entry);
+        if (developerSessionEvents.length > 6000) developerSessionEvents.shift();
+        if (state.dev) console.debug('[AI Voice Control]', entry);
+        const panel = document.getElementById('cgas-dev-logs');
+        if (panel && state.dev) panel.textContent = buildDevSnapshot();
+    }
+    function logReadAloudDiagnostic(message) {
+        const entry = new Date().toLocaleTimeString() + ' [ReadAloud] ' + message;
+        readAloudDiagnosticEvents.push(entry);
+        if (readAloudDiagnosticEvents.length > 100) readAloudDiagnosticEvents.shift();
+        logDeveloperEvent('READ_ALOUD', message);
+    }
+    function exportDeveloperLog() {
+        logDeveloperEvent('EXPORT', 'User requested .log export');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = 'NoXoZ_AI_VoiceControl-v' + VERSION + '-' + timestamp + '.log';
+        const content = '# NoXoZ AI Voice Control developer log\n# Captured: ' + new Date().toISOString() +
+            '\n# Version: ' + VERSION + '\n\n' + buildDevSnapshot() + '\n';
+        try {
+            chrome.runtime.sendMessage({type: 'CGAS_EXPORT_DEVELOPER_LOG', filename, content}, (reply) => {
+                if (chrome.runtime.lastError || !reply || !reply.ok) {
+                    logDeveloperEvent('EXPORT', 'saveAs failed: ' + (chrome.runtime.lastError?.message || reply?.error || 'unknown'), 'ERROR');
+                    setStatus('Developer log export failed');
+                } else logDeveloperEvent('EXPORT', 'Save dialog opened');
+            });
+        } catch (error) {
+            logDeveloperEvent('EXPORT', 'Failed: ' + String(error), 'ERROR');
+            setStatus('Developer log export failed');
+        }
+    }
+
+    async function copyDeveloperLog() {
+        logDeveloperEvent('COPY', 'User requested full log copy');
+        const content = '# NoXoZ AI Voice Control developer log\n# Captured: ' + new Date().toISOString() +
+            '\n# Version: ' + VERSION + '\n\n' + buildDevSnapshot() + '\n';
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(content);
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = content;
+                textArea.setAttribute('readonly', '');
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.documentElement.appendChild(textArea);
+                textArea.select();
+                const copied = document.execCommand('copy');
+                textArea.remove();
+                if (!copied) throw new Error('copy command rejected');
+            }
+            logDeveloperEvent('COPY', 'Full developer log copied to clipboard');
+            setStatus('Developer log copied');
+        } catch (error) {
+            logDeveloperEvent('COPY', 'Failed: ' + String(error), 'ERROR');
+            setStatus('Developer log copy failed');
+        }
+    }
+
+    function clearDeveloperLog() {
+        readAloudDiagnosticEvents.length = 0;
+        developerSessionEvents.length = 0;
+        developerPreviousStatus = '';
+        const panel = document.getElementById('cgas-dev-logs');
+        if (panel) panel.textContent = buildDevSnapshot();
+    }
+
     function buildDevSnapshot() {
         return [
             'mode=' + currentWidgetMode(),
@@ -3180,8 +5024,16 @@
             'cycleDone=' + cycleDone,
             'pendingSendAfterV=' + pendingSendAfterV,
             'autoStartArmed=' + autoStartArmed,
+            'responsePipelineActive=' + responsePipelineActive,
+            'readAloudFlowInProgress=' + readAloudFlowInProgress,
             'voiceSeen=' + voiceSeen,
-            'status=' + (lastStatusText || 'Idle')
+            'status=' + (lastStatusText || 'Idle'),
+            '',
+            'READ ALOUD EVENTS:',
+            ...readAloudDiagnosticEvents,
+            '',
+            'FULL DEVELOPER SESSION LOG:',
+            ...developerSessionEvents
         ].join('\n');
     }
 
@@ -3241,6 +5093,12 @@
 
         header.appendChild(controlsRow);
         widget.appendChild(header);
+
+        // Export-family placement: status is directly below the header, above the action stack.
+        const status = document.createElement('div');
+        status.id = 'cgas-mini-status';
+        status.textContent = 'FULL FLOW NO';
+        widget.appendChild(status);
 
         const fullFlowToggle = makeButton('NOT ACTIVATED', 'cgas-main-toggle', handleToggleClick);
         fullFlowToggle.id = 'cgas-mini-toggle';
@@ -3312,10 +5170,6 @@
         tosBox.appendChild(volumeRow);
         widget.appendChild(tosBox);
 
-        const status = document.createElement('div');
-        status.id = 'cgas-mini-status';
-        status.textContent = 'FULL FLOW NO';
-        widget.appendChild(status);
 
         const readAloudGroup = document.createElement('div');
         readAloudGroup.id = 'cgas-mini-readaloud-group';
@@ -3328,7 +5182,7 @@
         const readAloudManualRow = document.createElement('div');
         readAloudManualRow.id = 'cgas-mini-readaloud-manual-row';
 
-        const startReadAloudButton = makeButton('ReadAloud Last Message', 'cgas-action cgas-mini-start-readaloud', togglePageReadAloudPlayback);
+        const startReadAloudButton = makeButton('ReadAloud Last Message', 'cgas-action cgas-mini-start-readaloud', startPageReadAloudPlayback);
         startReadAloudButton.id = 'cgas-mini-start-readaloud';
         startReadAloudButton.title = 'Manual ReadAloud for the last assistant message';
         readAloudManualRow.appendChild(startReadAloudButton);
@@ -3341,10 +5195,12 @@
         readAloudGroup.appendChild(readAloudManualRow);
         widget.appendChild(readAloudGroup);
 
-        const platformButton = makeButton('ChatGPT', 'cgas-action cgas-mini-platform-mode', togglePlatformMode);
+        // Keep platform switching accessible in Developer header, not as an unrelated
+        // full-width action beneath Read Aloud. The same element ID/handler remains.
+        const platformButton = makeButton('ChatGPT', 'cgas-head-btn cgas-mini-platform-mode', togglePlatformMode);
         platformButton.id = 'cgas-mini-platform-mode';
         platformButton.title = 'Switch between ChatGPT and Claude runtime profiles';
-        widget.appendChild(platformButton);
+        controlsRow.insertBefore(platformButton, spacer);
 
         const footer = document.createElement('div');
         footer.id = 'cgas-mini-footer';
@@ -3353,10 +5209,28 @@
 
         const devPanel = document.createElement('div');
         devPanel.id = 'cgas-dev-box';
+        const devHeader = document.createElement('div');
+        devHeader.id = 'cgas-dev-header';
         const devTitle = document.createElement('div');
         devTitle.id = 'cgas-dev-title';
         devTitle.textContent = 'DEVELOPER MODE';
-        devPanel.appendChild(devTitle);
+        devHeader.appendChild(devTitle);
+        const exportLogButton = makeButton('⇩', 'cgas-dev-export-log', exportDeveloperLog);
+        exportLogButton.id = 'cgas-dev-export-log';
+        exportLogButton.title = 'Export Log';
+        exportLogButton.setAttribute('aria-label', 'Export Log');
+        devHeader.appendChild(exportLogButton);
+        const copyLogButton = makeButton('⧉', 'cgas-dev-copy-log', copyDeveloperLog);
+        copyLogButton.id = 'cgas-dev-copy-log';
+        copyLogButton.title = 'Copy Log';
+        copyLogButton.setAttribute('aria-label', 'Copy Log');
+        devHeader.appendChild(copyLogButton);
+        const clearLogButton = makeButton('×', 'cgas-dev-clear-log', clearDeveloperLog);
+        clearLogButton.id = 'cgas-dev-clear-log';
+        clearLogButton.title = 'Clear Log';
+        clearLogButton.setAttribute('aria-label', 'Clear Log');
+        devHeader.appendChild(clearLogButton);
+        devPanel.appendChild(devHeader);
         const devLogs = document.createElement('pre');
         devLogs.id = 'cgas-dev-logs';
         devLogs.textContent = buildDevSnapshot();
@@ -3454,7 +5328,7 @@
             widget.style.height = '';
             return;
         }
-        const defaultWidth = state.dev ? 314 : 274;
+        const defaultWidth = state.dev ? 552 : 274;
         const requestedWidth = state.maxiWidth > 0 ? state.maxiWidth : defaultWidth;
         const requestedHeight = state.maxiHeight > 0 ? state.maxiHeight : Math.max(260, widget.scrollHeight || 0);
         const size = clampWidgetSize(requestedWidth, requestedHeight);
@@ -3571,12 +5445,12 @@
             window.requestAnimationFrame(resolve);
         }));
 
-        const width = widget.offsetWidth || 148;
-        const height = widget.offsetHeight || 520;
-        const rightMargin = 34;
-        const bottomMargin = 18;
-        const left = Math.max(4, Math.round(window.innerWidth - width - rightMargin));
-        const top = Math.max(4, Math.round(window.innerHeight - height - bottomMargin));
+        state.dev = true;
+        state.maxiWidth = 300;
+        state.maxiHeight = 0;
+        updateWidget();
+        const left = 4;
+        const top = 4;
 
         widget.style.left = left + 'px';
         widget.style.top = top + 'px';
@@ -3686,6 +5560,22 @@
         widget.classList.toggle('cgas-dev', state.dev);
         widget.classList.toggle('cgas-mini-hidden', !state.visible);
 
+        // Mini matches Export: place the SAME live status just above its footer.
+        // Maxi keeps the status beneath the header; Button still hides it.
+        // Move the existing node only on actual mode transitions to avoid churn.
+        const widgetStatus = document.getElementById('cgas-mini-status');
+        const widgetFooter = document.getElementById('cgas-mini-footer');
+        const widgetHeader = document.getElementById('cgas-mini-header');
+        if (widgetStatus && widgetFooter && widgetHeader) {
+            if (mode === 'mini') {
+                if (widgetStatus.nextElementSibling !== widgetFooter) {
+                    widget.insertBefore(widgetStatus, widgetFooter);
+                }
+            } else if (widgetHeader.nextElementSibling !== widgetStatus) {
+                widgetHeader.insertAdjacentElement('afterend', widgetStatus);
+            }
+        }
+
         if (state.left !== null && state.top !== null) {
             widget.style.left = state.left + 'px';
             widget.style.top = state.top + 'px';
@@ -3745,7 +5635,12 @@
         }
 
         const startReadAloud = document.getElementById('cgas-mini-start-readaloud');
-        if (startReadAloud) startReadAloud.textContent = mode === 'maxi' ? 'ReadAloud Last Message' : 'ReadAloud Last';
+        if (startReadAloud) {
+            startReadAloud.textContent = mode === 'maxi' ? 'ReadAloud Last Message' : 'ReadAloud Last';
+            // UI-only reflection of the existing playback evidence (never starts playback).
+            startReadAloud.classList.toggle('cgas-mini-start-readaloud-active',
+                Boolean(state.pageReadAloudActive || detectVisiblePageReadAloudStop()));
+        }
 
         const stopReadAloud = document.getElementById('cgas-mini-stop-readaloud');
         if (stopReadAloud) {
@@ -3789,7 +5684,6 @@
         if (devLogs) devLogs.textContent = buildDevSnapshot();
 
         updateVolumeMeter();
-        ensureWidgetInsideViewport(true);
     }
 
     function bootLoops() {
@@ -3811,8 +5705,12 @@
             return;
         }
         await loadState();
+        installAssistantConversationLifecycleBridge();
+        installPromptSendTriggerBridge();
         createWidget();
         if (state.fullFlowEnabled) {
+            responsePipelineActive = false;
+            readAloudFlowInProgress = false;
             cycleDone = !state.enabled;
             vClickedThisCycle = false;
             sendAttemptedThisCycle = false;
@@ -3832,7 +5730,7 @@
             }
         } else {
             cycleDone = true;
-            setStatus('FULL FLOW NO');
+            setStatus(currentWidgetMode() === 'mini' ? 'Ready' : 'FULL FLOW NO');
         }
         bootLoops();
     }

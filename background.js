@@ -8,10 +8,34 @@
  * PROJECT      : NoXoZ_AI_VoiceControl
  * PROJECT ROOT : /mnt/data2_78g/Security/scripts/Projects_web/NoXoZ_AI_VoiceControl/
  * TARGET USAGE : Browser action show/hide bridge for ChatGPT / Claude AutoSend widget.
- * VERSION      : v8.10.0
- * DATE         : 2026-06-28 CEST
+ * VERSION      : v10.0.0
+ * DATE         : 2026-10-13 05:55 CEST
  * ==============================================================================
  * CHANGELOG:
+ *   v9.0.1 – 2026-10-13 – Runtime version synchronized; existing network hook preserved.
+ *   v8.12.24 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       - Package/runtime metadata synchronized with the prompt-centered Full Flow state machine.
+ *       - Existing MAIN-world conversation lifecycle hook preserved for manual and dictated SEND detection.
+ *   v8.12.21 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       - Full Flow state-machine alignment: Read Aloud completion preserves the independent New Transcription + TOS choice.
+ *       - Existing conversation lifecycle bridge and toolbar/reload behavior preserved.
+ *   v8.12.20 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       - Added MAIN-world ChatGPT conversation fetch lifecycle bridge for Full Flow response completion.
+ *       - Existing toolbar/reload behavior preserved.
+ *   v8.12.18 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       - Package/runtime metadata synchronized with v8.12.18.
+ *   v8.12.17 – 2026-10-13 – Bruno DELNOZ / ChatGPT
+ *       - Version metadata synchronized.
+ *       - On manifest-version change, open ChatGPT/Claude tabs are refreshed once so stale content scripts cannot keep the previous build alive.
+ *       - Existing reload bridge preserved.
+ *   v8.11.07 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       - Version metadata alignment; runtime unchanged.
+ *   v8.11.02 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       - Metadata alignment; background runtime unchanged.
+ *   v8.11.01 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       - Version metadata sync for Export-family control styling; runtime untouched.
+ *   v8.11.00 – 2026-10-09 – Bruno DELNOZ / ChatGPT
+ *       - Metadata synchronized with Purple Neon 8.11.00 release; runtime untouched.
  *   v8.9.1 – 2026-06-30 – Bruno DELNOZ / ChatGPT
  *       Fixed:
  *       - Reload Extension ported to the stable ChatGPT Export v3.1.3 pattern: storage flag from content, direct CGAS_RELOAD_EXTENSION message, chrome.runtime.reload(), then background refreshes ChatGPT tabs after service worker restart.
@@ -91,6 +115,8 @@
     const CSS_FILE = 'autosend-style.css';
 
     const REFRESH_AFTER_RELOAD_KEY = 'cgas.refreshAfterReload';
+    const LOADED_VERSION_KEY = 'cgas.loadedManifestVersion';
+    const CURRENT_VERSION = chrome.runtime.getManifest().version;
     const SUPPORTED_CHATGPT_URLS = ['https://chatgpt.com/*', 'https://chat.openai.com/*', 'https://claude.ai/*', 'https://www.claude.ai/*'];
 
     async function refreshChatGPTTabsAfterReload() {
@@ -123,6 +149,22 @@
                 log('refresh-after-reload handler crashed.', error && error.message ? error.message : String(error));
             }
         }, 500);
+    }
+
+    function refreshTabsWhenManifestVersionChanges() {
+        setTimeout(() => {
+            try {
+                chrome.storage.local.get([LOADED_VERSION_KEY], (data) => {
+                    const previous = data && data[LOADED_VERSION_KEY] ? String(data[LOADED_VERSION_KEY]) : '';
+                    if (previous === CURRENT_VERSION) return;
+                    chrome.storage.local.set({ [LOADED_VERSION_KEY]: CURRENT_VERSION }, () => {
+                        refreshChatGPTTabsAfterReload();
+                    });
+                });
+            } catch (error) {
+                log('version-change tab refresh failed.', error && error.message ? error.message : String(error));
+            }
+        }, 650);
     }
 
     function executeRuntimeReload() {
@@ -198,6 +240,74 @@
         });
     }
 
+    function installConversationNetworkHook(tabId) {
+        return new Promise((resolve) => {
+            if (!chrome.scripting || typeof chrome.scripting.executeScript !== 'function') {
+                resolve({ ok: false, error: 'chrome.scripting.executeScript unavailable' });
+                return;
+            }
+            chrome.scripting.executeScript({
+                target: { tabId },
+                world: 'MAIN',
+                func: () => {
+                    if (window.__NOXOZ_CGAS_CONVERSATION_FETCH_HOOK__) return;
+                    window.__NOXOZ_CGAS_CONVERSATION_FETCH_HOOK__ = true;
+                    const nativeFetch = window.fetch;
+                    if (typeof nativeFetch !== 'function') return;
+
+                    const emit = (phase) => {
+                        try {
+                            document.dispatchEvent(new CustomEvent('cgas-chatgpt-conversation-network', {
+                                detail: { phase, at: Date.now() }
+                            }));
+                        } catch (error) {
+                            // Never interfere with ChatGPT because of diagnostics.
+                        }
+                    };
+
+                    window.fetch = async function noxozConversationAwareFetch(input, init) {
+                        let tracked = false;
+                        try {
+                            const rawUrl = typeof input === 'string' || input instanceof URL
+                                ? String(input)
+                                : input && input.url ? String(input.url) : '';
+                            const method = String(init && init.method || input && input.method || 'GET').toUpperCase();
+                            tracked = method === 'POST' && new URL(rawUrl, location.href).pathname === '/backend-api/f/conversation';
+                        } catch (error) {
+                            tracked = false;
+                        }
+
+                        if (tracked) emit('start');
+                        try {
+                            const response = await nativeFetch.apply(this, arguments);
+                            if (tracked) {
+                                try {
+                                    response.clone().text().then(
+                                        () => emit('complete'),
+                                        () => emit('complete')
+                                    );
+                                } catch (error) {
+                                    // PerformanceResourceTiming in the content script is the fallback.
+                                }
+                            }
+                            return response;
+                        } catch (error) {
+                            if (tracked) emit('complete');
+                            throw error;
+                        }
+                    };
+                }
+            }, () => {
+                const runtimeError = chrome.runtime.lastError;
+                if (runtimeError) {
+                    resolve({ ok: false, error: runtimeError.message || String(runtimeError) });
+                    return;
+                }
+                resolve({ ok: true });
+            });
+        });
+    }
+
     async function ensureContentScriptReady(tabId) {
         await insertCss(tabId);
         const injected = await executeContentScript(tabId);
@@ -237,19 +347,45 @@
     }
 
     consumeRefreshAfterReloadFlag();
+    refreshTabsWhenManifestVersionChanges();
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (!message || message.type !== 'CGAS_RELOAD_EXTENSION') {
+        if (!message || typeof message !== 'object') return false;
+
+        if (message.type === 'CGAS_EXPORT_DEVELOPER_LOG') {
+            const filename = String(message.filename || 'NoXoZ_AI_VoiceControl.log').replace(/[^a-zA-Z0-9_.-]/g, '_');
+            const body = String(message.content || '');
+            const bytes = new TextEncoder().encode(body);
+            let binary = '';
+            for (let index = 0; index < bytes.length; index += 8192) {
+                binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
+            }
+            const url = 'data:text/plain;charset=utf-8;base64,' + btoa(binary);
+            chrome.downloads.download({url, filename, saveAs: true, conflictAction: 'uniquify'}, (downloadId) => {
+                const error = chrome.runtime.lastError;
+                sendResponse(error ? {ok:false,error:error.message} : {ok:Boolean(downloadId),downloadId});
+            });
+            return true;
+        }
+
+        if (message.type === 'CGAS_INSTALL_CONVERSATION_NETWORK_HOOK') {
+            const tabId = sender && sender.tab && sender.tab.id;
+            if (!tabId) {
+                sendResponse({ ok: false, error: 'No sender tab id' });
+                return false;
+            }
+            installConversationNetworkHook(tabId)
+                .then((result) => sendResponse(result))
+                .catch((error) => sendResponse({ ok: false, error: error && error.message ? error.message : String(error) }));
+            return true;
+        }
+
+        if (message.type === 'CGAS_RELOAD_EXTENSION') {
+            sendResponse({ ok: true });
+            setTimeout(() => chrome.runtime.reload(), 150);
             return false;
         }
 
-        log('Reload extension requested from widget: CGAS_RELOAD_EXTENSION');
-        try {
-            sendResponse({ ok: true, reloading: true });
-        } catch (error) {
-            // Sender may disappear during runtime reload.
-        }
-        executeRuntimeReload();
         return false;
     });
 

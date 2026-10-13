@@ -1,32 +1,40 @@
-# PROJECT SPECIFIC
-uploads
-*.pid
-__pycache__
-*.log
-*.db
-creation_log
-*-swp
-*.tmp
-*.log
-*.bak
-*.pid
-# ========================================
-# Template: shell
-# Added: 2026-02-04 22:19:59
-# ========================================
-logs/
-output/
-infos/
-result/
-results/
-*.log
-*.zip
-*.tar.gz
-*.rar
-certs/
-secrets/
-.secrets
-.zip/
+# NoXoZ AI Voice Control — repository packaging v10.0.0
+# Keep application sources, public docs and the unversioned installation ZIP.
+# Local/private archives, tests and historical material must not be published.
+.tests/
+.git/
 .old/
 .docs/
 .private/
+.zip/
+tests/
+test/
+node_modules/
+__pycache__/
+.pytest_cache/
+.vscode/
+.idea/
+*.swp
+*~
+*.bak
+*.tmp
+*.pid
+*.db
+*.log
+*.tar.gz
+*.rar
+*.zip
+!NoXoZ_AI_VoiceControl-public.zip
+logs/
+output/
+results/
+secrets/
+.secrets/
+certs/
+uploads/
+creation_log/
+
+# Do not add private rules or diagnostic exports to a public repository.
+*_PRIVATE_*
+*_SECRET_*
+*.har

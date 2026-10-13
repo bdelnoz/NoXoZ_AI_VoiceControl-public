@@ -1,28 +1,42 @@
-# Installation — AI Voice Control by NoXoZ.be v8.10.0
+<!--
+PATH: INSTALL.md
+PROJECT: NoXoZ AI Voice Control
+VERSION: v10.0.0
+AUTHOR: Bruno DELNOZ / @NoXoZ.be
+DATE: 2026-10-13
+PURPOSE: Browser installation and upgrade instructions
+-->
 
-AI Voice Control is distributed as an unpacked Manifest V3 browser extension.
+# Install — NoXoZ AI Voice Control v10.0.0
+
+This independent Chromium Manifest V3 extension is distributed as an unpacked directory, **not** as an installer.
 
 ## Brave / Chrome / Chromium
 
-1. Extract the extension ZIP to a permanent folder.
-2. Open the browser extensions page.
+1. Download and extract `NoXoZ_AI_VoiceControl-public.zip` to a **permanent** location.
+2. Open `brave://extensions/` (Brave) or `chrome://extensions/` (Chrome / Chromium).
 3. Enable **Developer mode**.
-4. Choose **Load unpacked**.
-5. Select the folder containing `manifest.json`.
-6. Open or reload ChatGPT.
-7. Click the extension toolbar icon to show or hide the widget.
+4. Click **Load unpacked**.
+5. Select the extracted folder containing `manifest.json`.
+6. Open or refresh `https://chatgpt.com/`.
+7. Use the toolbar icon to open the widget; configure Full Flow, New Transcription + TOS, AutoSend, and Trigger Read Aloud to your preference.
+8. Authorize microphone access when requested, verify the input device and test a short dictated sentence before automated sending.
 
-## Updating a local unpacked installation
+## Updating
 
-Replace the extension files in the same local folder, then use the Developer-mode **Reload Ext** control or the browser extension reload control.
+Replace the extension files in the **same folder**, reload the extension from the browser extensions page, and refresh the ChatGPT page. The Developer **Reload Ext** control can also be used when available.
 
-## Supported sites declared by the extension
+## Safe initial test
+
+First use **AutoSend OFF**: activate Full Flow and New Transcription + TOS, speak and wait for silence, then check that the transcript remains editable in PROMPT. Only enable AutoSend once you have confirmed the intended audio source and silence threshold.
+
+## Declared supported site URLs
 
 - `https://chatgpt.com/*`
 - `https://chat.openai.com/*`
 - `https://claude.ai/*`
 - `https://www.claude.ai/*`
 
-## Interface modes
+The release's live test history specifically covers ChatGPT. The manifest listing of a host does not guarantee parity across all versions of that site.
 
-The widget provides Button, Mini, Maxi, and Developer modes. Maxi and Developer modes can be resized from their edges and corners.
+For settings, troubleshooting, limitations and privacy information, read `README.md`, `PRIVACY.md` and `SECURITY.md`.

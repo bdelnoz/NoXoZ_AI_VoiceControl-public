@@ -1,35 +1,38 @@
-# Privacy — AI Voice Control by NoXoZ.be v8.10.0
+<!--
+PATH: PRIVACY.md
+PROJECT: NoXoZ AI Voice Control
+VERSION: v10.0.0
+AUTHOR: Bruno DELNOZ / @NoXoZ.be
+DATE: 2026-10-13
+PURPOSE: Public local-data and microphone privacy information
+-->
 
-> Independent project. Not affiliated with, endorsed by, sponsored by, or officially connected to OpenAI or Anthropic.
+# Privacy — NoXoZ AI Voice Control v10.0.0
 
-AI Voice Control is designed as a local browser-side workflow extension.
+> Independent project; not affiliated with, endorsed by, sponsored by or officially connected to OpenAI or Anthropic.
 
-## What the extension processes
+AI Voice Control uses local browser extension logic to coordinate the dictation and Read Aloud functions visible on supported AI websites.
 
-The extension can inspect the supported AI page state required for its workflow, including:
+## Data processed in the browser
 
-- whether voice transcription is active;
-- whether a transcript is present in the composer;
-- whether Send is available;
-- whether an assistant response is still being generated;
-- whether Read Aloud / Stop Read Aloud controls are available;
-- microphone amplitude used for Time Of Silence detection;
-- locally stored extension settings.
+It observes the status of voice dictation, text in the composer, available Send controls, whether the active assistant answer has finished rendering, playback controls, microphone level for TOS, and extension configuration. Developer logs can include UI state, event timing and page-interaction details.
 
-## Microphone
+## Microphone and transcription
 
-The extension uses browser microphone access for level / silence detection. It does not deliberately save microphone audio as files and does not upload microphone audio to a NoXoZ backend.
+The extension uses microphone input for amplitude/silence monitoring. **It is not designed to archive raw microphone audio or to transmit recordings to a NoXoZ backend.** The website's dictation feature may separately send audio to that website's provider for transcription, under the provider's own terms and privacy policy. The extension does not make the website's processing local or private.
 
-The AI website may separately process microphone audio for its own transcription feature under that provider's terms and privacy policy.
+## Local settings
 
-## Local storage
+`chrome.storage.local` holds options such as Full Flow, TOS duration, threshold, AutoSend, Trigger Read Aloud, platform selection, widget mode/position/size and Developer state.
 
-`chrome.storage.local` is used for extension settings such as flow state, TOS seconds, threshold, UI mode, widget position/size, Developer mode, AutoSend, Read Aloud settings, and platform selection.
+## Diagnostics
 
-## Telemetry
+Developer logs are collected locally. If you copy or export a log, **review it before sharing**; page state, messages, timing or attachments may reveal personal or confidential information. The extension does not automatically upload a diagnostic log to NoXoZ.
 
-The extension contains no NoXoZ analytics or telemetry service.
+## Telemetry and donations
 
-## Donation link
+This release contains no NoXoZ analytics SDK or NoXoZ telemetry backend. When you click the support link, Stripe opens independently and applies its own privacy practices. Payment information is not processed by the extension.
 
-The support button opens a Stripe payment page only when the user explicitly clicks it. Stripe is an external service and handles payment processing directly.
+## Scope of claims
+
+No claim here replaces OpenAI, Anthropic, browser or Stripe privacy notices. The practical network behavior is subject to the installed release, the browser and site updates. For permissions and security reporting see `SECURITY.md`.

@@ -1,85 +1,95 @@
-/* NoXoZ AI Voice Control - Export-aligned UI - v8.10.0 - @NoXoZ.be */
+/* NoXoZ AI Voice Control - v10.0.0 - Export Mini footer status alignment - @NoXoZ.be
+ * 2026-10-09: Gray idle, blue hover and active states; Export exact donate sizing.
+ * Existing selectors, sizing controls, status line and resize behavior retained.
+ */
 
 #cgas-mini-widget{
   position:fixed;z-index:2147483647;top:calc(100vh - 360px);left:calc(86vw - 137px);
   width:274px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:7px;
-  border:1px solid rgba(132,204,22,.96);border-radius:13px;background:rgba(17,24,39,.97);
-  color:#f9fafb;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:11px;line-height:1.25;box-shadow:0 10px 34px rgba(0,0,0,.40),0 0 16px rgba(132,204,22,.10);
-  user-select:none;overflow:visible;
+  border:1px solid rgba(183,80,255,.96);border-radius:13px;background:rgba(16,12,30,.97);
+  color:#FAF6FF;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:11px;line-height:1.25;box-shadow:0 10px 34px rgba(0,0,0,.40),0 0 16px rgba(183,80,255,.08);
+  user-select:none;overflow:visible;max-height:calc(100vh - 8px);
 }
 #cgas-mini-widget *{box-sizing:border-box}
 #cgas-mini-widget.cgas-mini-hidden{display:none!important}
-#cgas-mini-widget.cgas-mini-on{box-shadow:0 10px 34px rgba(0,0,0,.42),0 0 22px rgba(132,204,22,.24)}
+#cgas-mini-widget.cgas-mini-on{box-shadow:0 10px 34px rgba(0,0,0,.42),0 0 22px rgba(183,80,255,.18)}
 
 /* Export-matched mode geometry */
 #cgas-mini-widget.cgas-mode-maxi{width:274px;min-width:248px;min-height:260px;overflow:auto}
-#cgas-mini-widget.cgas-mode-maxi.cgas-dev{width:314px;min-width:300px;display:flex;flex-direction:column;overflow:hidden}
+#cgas-mini-widget.cgas-mode-maxi.cgas-dev{width:300px;min-width:300px;display:flex;flex-direction:column;overflow:hidden}
 #cgas-mini-widget.cgas-mode-mini{width:126px;padding:5px;border-radius:12px}
-#cgas-mini-widget.cgas-mode-button{width:62px;padding:4px;border-radius:10px;background:rgba(8,10,12,.98)}
+#cgas-mini-widget.cgas-mode-button{width:62px;padding:4px;border-radius:10px;background:rgba(14,9,27,.98)}
 
 /* Header - same structure/sizing as ChatGPT Export */
 #cgas-mini-header{cursor:move;display:flex;flex-direction:column;gap:5px;margin-bottom:6px}
 .cgas-title-row{display:flex;align-items:center;min-width:0}
-#cgas-mini-title{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;color:#f7fee7;font-size:11.5px;font-weight:900}
+#cgas-mini-title{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;color:#F8F1FF;font-size:11.5px;font-weight:900}
 .cgas-controls-row{display:flex;align-items:center;gap:4px;min-width:0}
 .cgas-spacer{flex:1 1 auto}
 .cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step{
-  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#e5e7eb;font-weight:900;cursor:pointer
+  border:1px solid rgba(255,255,255,.18);background:rgba(77,51,109,.34);color:#F2E7FF;font-weight:900;cursor:pointer
 }
 .cgas-head-btn{height:20px;min-width:22px;padding:0 6px;border-radius:999px;font-size:10px;line-height:18px}
-.cgas-head-btn.on{background:rgba(132,204,22,.22);color:#ecfccb;border-color:rgba(190,242,100,.56)}
-.cgas-reload{display:none;min-width:58px;background:rgba(132,204,22,.20);color:#ecfccb;border-color:rgba(190,242,100,.34)}
+.cgas-head-btn.on{background:rgba(183,80,255,.24);color:#F6E9FF;border-color:rgba(208,152,255,.58)}
+.cgas-reload{display:none;min-width:58px;background:rgba(183,80,255,.18);color:#F1E2FF;border-color:rgba(208,152,255,.34)}
 #cgas-mini-widget.cgas-dev.cgas-mode-maxi .cgas-reload{display:inline-flex;align-items:center;justify-content:center}
-.cgas-mode-down{font-size:16px;line-height:16px;color:#d9f99d;border-color:rgba(132,204,22,.64);background:rgba(132,204,22,.14)}
-.cgas-head-btn:hover,.cgas-main-toggle:hover,.cgas-action:hover,.cgas-mini-step:hover{border-color:rgba(190,242,100,.72);background:rgba(132,204,22,.16)}
+.cgas-mode-down{font-size:16px;line-height:16px;color:#E8D4FF;border-color:rgba(183,80,255,.58);background:rgba(183,80,255,.12)}
+.cgas-head-btn:hover,.cgas-main-toggle:hover,.cgas-action:hover,.cgas-mini-step:hover{border-color:rgba(208,152,255,.70);background:rgba(183,80,255,.16)}
 
 /* Primary flow controls */
 .cgas-main-toggle,.cgas-action{width:100%;min-height:26px;border-radius:9px;padding:5px 7px;text-align:center;font-size:11px;margin-top:4px}
-.cgas-main-toggle{min-height:31px;font-size:12px;background:rgba(148,163,184,.24);color:#e2e8f0;border-color:rgba(203,213,225,.34)}
-.cgas-main-toggle.cgas-mini-active{background:rgba(132,204,22,.90);color:#111827;border-color:rgba(217,249,157,.92)}
+.cgas-main-toggle{min-height:31px;font-size:12px;background:rgba(68,51,104,.24);color:#EFE2FF;border-color:rgba(152,121,197,.34)}
+.cgas-main-toggle.cgas-mini-active{background:rgba(99,54,155,.88);color:#FCF6FF;border-color:rgba(171,115,220,.92)}
 
 #cgas-mini-tos-toggle.cgas-mini-tos-on,#cgas-mini-send-toggle.cgas-mini-send-on,#cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-on{
-  background:rgba(132,204,22,.82);color:#111827;border-color:rgba(190,242,100,.84)
+  background:rgba(99,54,155,.84);color:#FCF6FF;border-color:rgba(171,115,220,.86)
 }
 #cgas-mini-tos-toggle.cgas-mini-tos-off,#cgas-mini-send-toggle.cgas-mini-send-off,#cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-off{
-  background:rgba(255,255,255,.06);color:#ecfccb;border-color:rgba(163,230,53,.32)
+  background:rgba(56,37,86,.58);color:#F1E2FF;border-color:rgba(183,80,255,.32)
 }
 
 /* TOS block */
-#cgas-mini-tos-box{margin-top:6px;padding:6px;border-radius:10px;background:rgba(8,12,18,.70);border:1px solid rgba(132,204,22,.34)}
-#cgas-mini-tos-title{text-align:center;color:#bef264;font-size:10px;font-weight:1000;margin-bottom:3px}
+#cgas-mini-tos-box{margin-top:6px;padding:6px;border-radius:10px;background:rgba(18,12,33,.70);border:1px solid rgba(183,80,255,.32)}
+#cgas-mini-tos-title{text-align:center;color:#DCB9FF;font-size:10px;font-weight:1000;margin-bottom:3px}
 .cgas-mini-row{display:grid;grid-template-columns:1fr 36px 58px 36px;gap:5px;align-items:center;margin-top:4px}
-.cgas-mini-label{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#d1d5db;font-weight:800;font-size:10px}
+.cgas-mini-label{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#CFC2E4;font-weight:800;font-size:10px}
 .cgas-mini-step{min-width:28px;height:27px;padding:3px 6px;border-radius:9px;font-size:11px}
-.cgas-mini-value{display:flex;align-items:center;justify-content:center;height:27px;border-radius:9px;background:rgba(132,204,22,.10);border:1px solid rgba(163,230,53,.22);color:#ecfccb;font-weight:900}
+.cgas-mini-value{display:flex;align-items:center;justify-content:center;height:27px;border-radius:9px;background:rgba(183,80,255,.10);border:1px solid rgba(183,80,255,.22);color:#F1E2FF;font-weight:900}
 #cgas-mini-vol-row{display:grid;grid-template-columns:auto 1fr 28px;gap:6px;align-items:center;margin-top:6px}
-#cgas-mini-vol-bar{height:7px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(163,230,53,.18);overflow:hidden}
-#cgas-mini-vol-fill{height:100%;width:0;background:#84cc16;transition:width .08s linear}
-#cgas-mini-vol-value{text-align:right;color:#ecfccb;font-weight:900;font-size:10px}
+#cgas-mini-vol-bar{height:7px;border-radius:999px;background:rgba(49,30,79,.65);border:1px solid rgba(178,85,245,.18);overflow:hidden}
+#cgas-mini-vol-fill{height:100%;width:0;background:#BB53FF;transition:width .08s linear}
+#cgas-mini-vol-value{text-align:right;color:#DCAFFF;font-weight:900;font-size:10px}
 
 /* Status - deliberately two-line, anti-regression */
-#cgas-mini-status{margin:6px 0 0;padding:5px 7px;min-height:34px;max-height:34px;border-radius:9px;background:rgba(77,124,15,.18);border:1px solid rgba(132,204,22,.24);color:#d9f99d;font-size:10px;font-weight:800;line-height:1.18;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;word-break:break-word}
+#cgas-mini-status{margin:6px 0 0;padding:5px 7px;min-height:34px;max-height:34px;border-radius:9px;background:rgba(71,38,115,.16);border:1px solid rgba(183,80,255,.24);color:#E7D4FF;font-size:10px;font-weight:800;line-height:1.18;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;word-break:break-word}
 
 /* Read Aloud group */
-#cgas-mini-readaloud-group{margin-top:7px;padding:5px;border:1px solid rgba(132,204,22,.46);border-radius:10px;background:rgba(8,12,18,.58)}
+#cgas-mini-readaloud-group{margin-top:7px;padding:5px;border:1px solid rgba(183,80,255,.40);border-radius:10px;background:rgba(18,12,33,.58)}
 #cgas-mini-readaloud-group .cgas-action{margin-top:0}
-#cgas-mini-readaloud.cgas-mini-readaloud-on{background:rgba(132,204,22,.90);color:#111827;border-color:rgba(217,249,157,.94)}
-#cgas-mini-readaloud.cgas-mini-readaloud-off{background:rgba(132,204,22,.10);color:#ecfccb;border-color:rgba(190,242,100,.42)}
+#cgas-mini-readaloud.cgas-mini-readaloud-on{background:rgba(99,54,155,.84);color:#FCF6FF;border-color:rgba(171,115,220,.92)}
+#cgas-mini-readaloud.cgas-mini-readaloud-off{background:rgba(183,80,255,.08);color:#F1E2FF;border-color:rgba(208,152,255,.40)}
 #cgas-mini-readaloud-manual-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:5px}
 #cgas-mini-readaloud-manual-row>.cgas-action{min-width:0;font-size:9px;line-height:1.05;padding:4px}
-#cgas-mini-start-readaloud,#cgas-mini-stop-readaloud{background:rgba(132,204,22,.08);color:#ecfccb;border-color:rgba(163,230,53,.34)}
-#cgas-mini-stop-readaloud.cgas-mini-stop-readaloud-active{background:rgba(101,163,13,.68);color:#f7fee7;border-color:rgba(190,242,100,.82)}
+#cgas-mini-start-readaloud,#cgas-mini-stop-readaloud{background:rgba(183,80,255,.08);color:#F1E2FF;border-color:rgba(183,80,255,.34)}
+#cgas-mini-stop-readaloud.cgas-mini-stop-readaloud-active{background:rgba(90,47,145,.58);color:#FDF6FF;border-color:rgba(198,138,252,.84)}
 
 /* Platform + footer */
-#cgas-mini-platform-mode{margin-top:6px;background:rgba(255,255,255,.045);color:#d9f99d;border-color:rgba(132,204,22,.28)}
-#cgas-mini-footer{display:flex;justify-content:center;gap:8px;margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);color:#d9f99d;font-size:8.5px;font-weight:900}
+#cgas-mini-platform-mode{margin-top:6px;background:rgba(65,39,103,.27);color:#E7D4FF;border-color:rgba(183,80,255,.28)}
+#cgas-mini-footer{display:flex;justify-content:center;gap:8px;margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);color:#E7D4FF;font-size:8.5px;font-weight:900}
 
 /* Developer panel - same grow/resize behavior as Export */
 #cgas-dev-box{display:none;margin-top:7px;min-height:0}
 #cgas-mini-widget.cgas-mode-maxi.cgas-dev #cgas-dev-box{display:flex;flex:1 1 auto;flex-direction:column;overflow:hidden}
-#cgas-dev-title{text-align:center;color:#d9f99d;font-weight:1000;font-size:12px;margin:5px 0}
-#cgas-dev-logs{flex:1 1 auto;min-height:90px;max-height:none;overflow:auto;margin:0;padding:6px;border-radius:10px;background:rgba(15,23,42,.92);border:1px solid rgba(132,204,22,.24);color:#d1fae5;font-size:9px;white-space:pre-wrap;user-select:text}
+#cgas-dev-header{position:relative;display:flex;align-items:center;justify-content:center;min-height:27px;margin:2px 0}
+#cgas-dev-title{text-align:center;color:#E7D4FF;font-weight:1000;font-size:12px;margin:5px 0}
+#cgas-dev-export-log,#cgas-dev-copy-log,#cgas-dev-clear-log{position:absolute;width:25px;height:23px;padding:0;border:1px solid rgba(255,255,255,.18);border-radius:7px;background:rgba(255,255,255,.08);color:#E7D4FF;font-size:15px;font-weight:900;line-height:1;cursor:pointer}
+#cgas-dev-export-log{right:3px}
+#cgas-dev-copy-log{right:32px}
+#cgas-dev-clear-log{right:61px}
+#cgas-dev-export-log:hover,#cgas-dev-copy-log:hover,#cgas-dev-clear-log:hover{border-color:rgba(96,165,250,.66);background:rgba(96,165,250,.18)}
+#cgas-dev-export-log:focus-visible,#cgas-dev-copy-log:focus-visible,#cgas-dev-clear-log:focus-visible{outline:1px solid rgba(96,165,250,.66);outline-offset:2px}
+#cgas-dev-logs{flex:1 1 auto;min-height:90px;max-height:none;overflow:auto;margin:0;padding:6px;border-radius:10px;background:rgba(13,9,27,.92);border:1px solid rgba(183,80,255,.24);color:#E4CEFF;font-size:9px;white-space:pre-wrap;user-select:text}
 #cgas-mini-widget.cgas-mode-maxi.cgas-dev #cgas-mini-header,
 #cgas-mini-widget.cgas-mode-maxi.cgas-dev #cgas-mini-toggle,
 #cgas-mini-widget.cgas-mode-maxi.cgas-dev #cgas-mini-tos-toggle,
@@ -94,7 +104,7 @@
 /* MINI - Export dimensions and compact controls */
 #cgas-mini-widget.cgas-mode-mini #cgas-mini-header{display:grid;grid-template-columns:1fr 18px 18px;gap:3px;align-items:center;margin-bottom:4px}
 #cgas-mini-widget.cgas-mode-mini .cgas-title-row,#cgas-mini-widget.cgas-mode-mini .cgas-controls-row{display:contents}
-#cgas-mini-widget.cgas-mode-mini #cgas-mini-title{grid-column:1;font-size:9px;text-align:left;color:#d9f99d}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-title{grid-column:1;font-size:9px;text-align:left;color:#DBA7FF}
 #cgas-mini-widget.cgas-mode-mini #cgas-mini-maximize{grid-column:2;min-width:18px;width:18px;height:18px;line-height:16px;padding:0;font-size:10px}
 #cgas-mini-widget.cgas-mode-mini #cgas-mini-minimize{grid-column:3;min-width:18px;width:18px;height:18px;line-height:16px;padding:0;font-size:14px}
 #cgas-mini-widget.cgas-mode-mini #cgas-dev-toggle,
@@ -132,8 +142,8 @@
 #cgas-mini-widget.cgas-mode-button #cgas-mini-platform-mode,
 #cgas-mini-widget.cgas-mode-button #cgas-mini-footer,
 #cgas-mini-widget.cgas-mode-button #cgas-dev-box{display:none!important}
-#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle{display:block;width:54px;height:44px;min-height:44px;margin:0;padding:2px;border-radius:9px;border:1px solid rgba(132,204,22,.96);background:rgba(12,18,28,.98);color:#d9f99d;font-size:8px;font-weight:1000;box-shadow:inset 0 0 0 1px rgba(132,204,22,.16),0 0 10px rgba(132,204,22,.16);white-space:normal;overflow:hidden}
-#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active{background:rgba(132,204,22,.72);color:#111827}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle{display:block;width:54px;height:44px;min-height:44px;margin:0;padding:2px;border-radius:9px;border:1px solid rgba(183,80,255,.96);background:rgba(18,11,36,.98);color:#DBA7FF;font-size:8px;font-weight:1000;box-shadow:inset 0 0 0 1px rgba(183,80,255,.16),0 0 10px rgba(183,80,255,.16);white-space:normal;overflow:hidden}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active{background:rgba(99,54,155,.76);color:#FCF6FF}
 
 /* Resize handles - exactly Export behavior: MAXI only */
 .cgas-resize-handle{display:none}
@@ -144,5 +154,617 @@
 #cgas-mini-widget.cgas-mode-maxi .cgas-resize-w{top:14px;left:0;bottom:14px;width:7px;cursor:ew-resize}
 #cgas-mini-widget.cgas-mode-maxi .cgas-resize-ne{top:0;right:0;width:16px;height:16px;cursor:nesw-resize}
 #cgas-mini-widget.cgas-mode-maxi .cgas-resize-nw{top:0;left:0;width:16px;height:16px;cursor:nwse-resize}
-#cgas-mini-widget.cgas-mode-maxi .cgas-resize-se{right:1px;bottom:1px;width:16px;height:16px;cursor:nwse-resize;border-right:2px solid rgba(190,242,100,.58);border-bottom:2px solid rgba(190,242,100,.58);border-radius:0 0 10px 0}
+#cgas-mini-widget.cgas-mode-maxi .cgas-resize-se{right:1px;bottom:1px;width:16px;height:16px;cursor:nwse-resize;border-right:2px solid rgba(208,152,255,.58);border-bottom:2px solid rgba(208,152,255,.58);border-radius:0 0 10px 0}
 #cgas-mini-widget.cgas-mode-maxi .cgas-resize-sw{left:0;bottom:0;width:16px;height:16px;cursor:nesw-resize}
+
+
+/* ==========================================================================
+ * v8.11.00 - unified Purple Neon accents for EVERY display mode
+ * Palette is intentionally scoped to this extension (never affects ChatGPT).
+ * Active controls = rich NON-neon purple. Borders and focus = neon purple.
+ * ========================================================================= */
+#cgas-mini-widget{
+  --cgas-neon:#B750FF;
+  --cgas-neon-soft:#DBA3FF;
+  --cgas-active:#63369B;
+  --cgas-bg:#100C1E;
+  --cgas-section:#1C1530;
+  --cgas-surface:#322245;
+  --cgas-text:#F5EDFF;
+  --cgas-subtext:#D4C2EB;
+  border-color:var(--cgas-neon);
+  background:rgba(16,12,30,.98);
+  color:var(--cgas-text);
+  box-shadow:0 12px 30px rgba(0,0,0,.54),0 0 0 1px rgba(183,80,255,.13),0 0 17px rgba(183,80,255,.21);
+}
+#cgas-mini-widget.cgas-mini-on{
+  border-color:var(--cgas-neon-soft);
+  box-shadow:0 12px 32px rgba(0,0,0,.56),0 0 0 1px rgba(183,80,255,.28),0 0 24px rgba(183,80,255,.33);
+}
+#cgas-mini-widget .cgas-head-btn,
+#cgas-mini-widget .cgas-main-toggle,
+#cgas-mini-widget .cgas-action,
+#cgas-mini-widget .cgas-mini-step{
+  color:var(--cgas-text);
+  border-color:rgba(156,114,201,.54);
+  background:rgba(55,39,81,.86);
+  transition:background-color .14s ease,border-color .14s ease,box-shadow .14s ease;
+}
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step):is(:hover,:focus-visible){
+  border-color:var(--cgas-neon-soft);
+  background:rgba(109,58,166,.82);
+  box-shadow:0 0 0 1px rgba(183,80,255,.15),0 0 8px rgba(183,80,255,.20);
+}
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step):focus-visible{
+  outline:1px solid var(--cgas-neon);
+  outline-offset:2px;
+}
+/* The same active/selected shade applies in Maxi User, Maxi Dev and Mini. */
+#cgas-mini-widget .cgas-head-btn.on,
+#cgas-mini-widget .cgas-main-toggle.cgas-mini-active,
+#cgas-mini-widget #cgas-mini-tos-toggle.cgas-mini-tos-on,
+#cgas-mini-widget #cgas-mini-send-toggle.cgas-mini-send-on,
+#cgas-mini-widget #cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-on,
+#cgas-mini-widget #cgas-mini-readaloud.cgas-mini-readaloud-on,
+#cgas-mini-widget #cgas-mini-stop-readaloud.cgas-mini-stop-readaloud-active{
+  background:var(--cgas-active);
+  color:#FFFFFF;
+  border-color:#AB79DA;
+}
+#cgas-mini-widget #cgas-mini-tos-toggle.cgas-mini-tos-off,
+#cgas-mini-widget #cgas-mini-send-toggle.cgas-mini-send-off,
+#cgas-mini-widget #cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-off,
+#cgas-mini-widget #cgas-mini-readaloud.cgas-mini-readaloud-off{
+  background:rgba(47,32,76,.72);
+  color:var(--cgas-text);
+  border-color:rgba(147,96,202,.54);
+}
+#cgas-mini-widget :is(#cgas-mini-tos-box,#cgas-mini-readaloud-group){
+  background:rgba(26,17,47,.89);
+  border-color:rgba(172,95,237,.52);
+}
+#cgas-mini-widget :is(.cgas-mini-value,#cgas-mini-status,#cgas-mini-platform-mode){
+  background:rgba(57,34,89,.62);
+  border-color:rgba(160,98,226,.48);
+  color:var(--cgas-text);
+}
+#cgas-mini-widget #cgas-mini-vol-bar{background:#27183E;border-color:rgba(183,80,255,.48)}
+#cgas-mini-widget #cgas-mini-vol-fill{background:linear-gradient(90deg,#7743BC,#CE6BFF)}
+#cgas-mini-widget #cgas-mini-vol-bar:has(.cgas-mini-vol-over){box-shadow:0 0 5px rgba(183,80,255,.43)}
+#cgas-mini-widget #cgas-mini-title,
+#cgas-mini-widget #cgas-mini-tos-title,
+#cgas-mini-widget #cgas-dev-title{color:#F9EFFF}
+#cgas-mini-widget #cgas-mini-footer{border-top-color:rgba(181,99,255,.30);color:#D7BCFF}
+#cgas-mini-widget #cgas-dev-logs{
+  background:rgba(11,8,25,.98);
+  border-color:rgba(173,101,238,.43);
+  color:#D8C6EF;
+  scrollbar-color:#6F42A4 #1B1231;
+}
+/* Button-only mode: small V-controller receives exactly the same purple system. */
+#cgas-mini-widget.cgas-mode-button{background:rgba(16,11,31,.98);border-color:var(--cgas-neon)}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle{
+  border:1px solid var(--cgas-neon);
+  background:rgba(39,23,65,.96);
+  color:#F7E6FF;
+  box-shadow:inset 0 0 0 1px rgba(183,80,255,.22),0 0 10px rgba(183,80,255,.20);
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active{
+  background:var(--cgas-active);
+  color:#FFFFFF;
+  border-color:var(--cgas-neon-soft);
+  box-shadow:0 0 12px rgba(183,80,255,.32);
+}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-title{color:#F2DEFF}
+#cgas-mini-widget.cgas-mode-maxi .cgas-resize-se{
+  border-right-color:rgba(183,80,255,.78);
+  border-bottom-color:rgba(183,80,255,.78);
+}
+@media (prefers-reduced-motion:reduce){
+  #cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step){transition:none}
+}
+
+
+/* ==========================================================================
+ * v8.11.01 — Export-family visual hierarchy in PURPLE (all four UI modes)
+ * Baseline is additive: no previous selector, layout or resize logic removed.
+ * Default = slate/plum neutral; selected = non-neon purple; outline = neon.
+ * ========================================================================= */
+#cgas-mini-widget{
+  --cgas-export-neutral:#252637;
+  --cgas-export-neutral-hover:#333048;
+  --cgas-export-neutral-border:rgba(182,172,202,.30);
+  --cgas-export-selected:#4C316E;
+  --cgas-export-selected-border:rgba(196,146,250,.62);
+  --cgas-active:var(--cgas-export-selected);
+  --cgas-section:#1A1729;
+  --cgas-surface:#292537;
+  background:rgba(15,15,28,.975);
+}
+/* Identical component family: outline, height, radius and typography.
+ * Applies equally to Maxi User, Maxi Developer, Mini and Button selectors. */
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step){
+  background:var(--cgas-export-neutral);
+  color:#F6F2FC;
+  border-color:var(--cgas-export-neutral-border);
+  box-shadow:none;
+}
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step):is(:hover,:focus-visible){
+  background:var(--cgas-export-neutral-hover);
+  border-color:var(--cgas-neon-soft);
+  box-shadow:0 0 9px rgba(183,80,255,.17);
+}
+/* Non-neon mauve appears ONLY while a control is selected or toggled on. */
+#cgas-mini-widget :is(.cgas-head-btn.on,.cgas-main-toggle.cgas-mini-active,
+ #cgas-mini-tos-toggle.cgas-mini-tos-on,
+ #cgas-mini-send-toggle.cgas-mini-send-on,
+ #cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-on,
+ #cgas-mini-readaloud.cgas-mini-readaloud-on,
+ #cgas-mini-stop-readaloud.cgas-mini-stop-readaloud-active){
+  background:var(--cgas-export-selected);
+  border-color:var(--cgas-export-selected-border);
+  color:#FFFFFF;
+}
+/* Inactive selectors remain subtle, never filled with vivid purple. */
+#cgas-mini-widget :is(#cgas-mini-tos-toggle.cgas-mini-tos-off,
+ #cgas-mini-send-toggle.cgas-mini-send-off,
+ #cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-off,
+ #cgas-mini-readaloud.cgas-mini-readaloud-off){
+  background:var(--cgas-export-neutral);
+  color:#F6F2FC;
+  border-color:var(--cgas-export-neutral-border);
+}
+#cgas-mini-widget :is(#cgas-mini-start-readaloud,#cgas-mini-stop-readaloud,
+ #cgas-mini-platform-mode){
+  background:var(--cgas-export-neutral);
+  color:#F6F2FC;
+  border-color:var(--cgas-export-neutral-border);
+}
+#cgas-mini-widget #cgas-mini-stop-readaloud.cgas-mini-stop-readaloud-active{
+  background:var(--cgas-export-selected);
+  border-color:var(--cgas-export-selected-border);
+  color:#FFFFFF;
+}
+#cgas-mini-widget :is(#cgas-mini-tos-box,#cgas-mini-readaloud-group){
+  background:rgba(25,23,39,.87);
+  border-color:rgba(157,129,187,.36);
+}
+#cgas-mini-widget :is(.cgas-mini-value,#cgas-mini-platform-mode){
+  background:rgba(44,40,63,.9);
+  border-color:rgba(148,131,177,.34);
+}
+/* Export-positioned status directly below header. Keep two-line capacity
+ * for runtime messages and full text in the native title tooltip. */
+#cgas-mini-widget #cgas-mini-status{
+  margin:3px 0 7px;
+  background:rgba(67,49,94,.34);
+  border-color:rgba(177,137,220,.34);
+  color:#E9DFF4;
+  text-align:left;
+  font-weight:800;
+}
+#cgas-mini-widget.cgas-mode-maxi #cgas-mini-status::before{
+  content:'Status: ';
+  font-weight:600;
+  color:#D0BDE8;
+}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-status{
+  margin:3px 0 4px;
+  font-size:7.5px;
+  padding:3px 4px;
+}
+/* Export proportions with dark neutral fields / compact header pills. */
+#cgas-mini-widget .cgas-head-btn.on{
+  background:rgba(80,54,114,.94);
+  border-color:var(--cgas-export-selected-border);
+}
+#cgas-mini-widget .cgas-head-btn.cgas-reload{
+  background:rgba(65,44,92,.48);
+  border-color:rgba(172,130,220,.44);
+}
+#cgas-mini-widget #cgas-dev-logs{
+  background:rgba(13,14,27,.96);
+  border-color:rgba(169,118,228,.32);
+  color:#D7D3E5;
+}
+/* Button-only shell: same subdued idle / rich selected distinction. */
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle{
+  background:rgba(30,27,47,.97);
+  border-color:var(--cgas-neon);
+  box-shadow:0 0 9px rgba(183,80,255,.19);
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active{
+  background:var(--cgas-export-selected);
+  border-color:var(--cgas-neon-soft);
+}
+
+
+/* ============================================================================
+ * v8.11.01 FINAL — ChatGPT Export v7.0.0 p25 exact visual language.
+ * COLOR CONTRACT: copy Export's non-red colors verbatim; ONLY Export's red
+ * accent family becomes purple on Voice Control. Export blue remains blue.
+ * GEOMETRY CONTRACT: component heights, radii, type sizes, padding and
+ * button borders match the analogous Export components in all four modes.
+ * Existing selectors and feature logic above are intentionally preserved.
+ * ========================================================================== */
+#cgas-mini-widget{
+  --cgas-neon:#b750ff;
+  --cgas-neon-soft:#dba3ff;
+  --cgas-active:rgba(96,165,250,.24);
+  --cgas-export-neutral:rgba(255,255,255,.08);
+  --cgas-export-selected:rgba(96,165,250,.24);
+  --cgas-export-selected-border:rgba(147,197,253,.58);
+  --cgas-export-neutral-border:rgba(255,255,255,.18);
+  --cgas-export-neutral-hover:rgba(96,165,250,.18);
+  --cgas-bg:rgba(17,24,39,.96);
+  --cgas-section:rgba(255,255,255,.055);
+  --cgas-surface:rgba(255,255,255,.08);
+  --cgas-text:#f9fafb;
+  --cgas-subtext:#cbd5e1;
+  padding:7px;
+  border:1px solid rgba(183,80,255,.95); /* Export red edge -> purple */
+  border-radius:13px;
+  background:rgba(17,24,39,.96);
+  color:#f9fafb;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:11px;
+  line-height:1.25;
+  box-shadow:0 10px 34px rgba(0,0,0,.36);
+}
+#cgas-mini-widget.cgas-mini-on{
+  border-color:rgba(183,80,255,.95);
+  box-shadow:0 10px 34px rgba(0,0,0,.42),0 0 22px rgba(183,80,255,.22);
+}
+#cgas-mini-widget.cgas-mode-button{
+  padding:4px;border-radius:10px;background:rgba(8,10,12,.97);
+}
+/* Export shared button definitions and hover — NO purple on neutral / blue. */
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step){
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.08);
+  color:#e5e7eb;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:none;
+}
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step):hover{
+  border-color:rgba(96,165,250,.66);
+  background:rgba(96,165,250,.18);
+  box-shadow:none;
+}
+#cgas-mini-widget :is(.cgas-head-btn,.cgas-main-toggle,.cgas-action,.cgas-mini-step):focus-visible{
+  outline:1px solid rgba(96,165,250,.66);
+  outline-offset:2px;
+}
+/* Export header pills: 20px, 10px, same radii, blue selection. */
+#cgas-mini-widget .cgas-head-btn{
+  height:20px;min-width:22px;padding:0 6px;border-radius:999px;
+  font-size:10px;line-height:18px;
+}
+#cgas-mini-widget .cgas-head-btn.on{
+  background:rgba(96,165,250,.22);
+  color:#dbeafe;
+  border-color:rgba(147,197,253,.54);
+}
+#cgas-mini-widget .cgas-head-btn.cgas-reload{
+  min-width:58px;
+  background:rgba(180,83,9,.30); /* Export amber unchanged */
+  color:#fef3c7;
+  border-color:rgba(251,191,36,.30);
+}
+#cgas-mini-widget .cgas-head-btn.cgas-mode-down{
+  font-size:16px;line-height:16px;
+  color:#e9c4ff;
+  border-color:rgba(183,80,255,.60); /* Export red dot -> purple */
+  background:rgba(183,80,255,.16);
+}
+#cgas-mini-widget #cgas-mini-title{
+  color:#f9fafb;font-size:11.5px;font-weight:900;
+}
+/* Export's blue status line, immediately under header. Two-line safety kept. */
+#cgas-mini-widget #cgas-mini-status{
+  margin:5px 0 7px;
+  padding:5px 7px;
+  min-height:34px;max-height:34px;
+  border-radius:9px;
+  background:rgba(37,99,235,.14);
+  border:1px solid rgba(96,165,250,.18);
+  color:#cbd5e1;
+  font-size:11px;
+  font-weight:700;
+  text-align:left;
+}
+#cgas-mini-widget.cgas-mode-maxi #cgas-mini-status::before{
+  color:#dbeafe;font-weight:600;
+}
+/* Export range-selector button geometry, all routine Voice actions. */
+#cgas-mini-widget .cgas-action{
+  width:100%;min-height:26px;border-radius:9px;
+  padding:5px 7px;text-align:center;
+  font-size:11px;
+  margin-top:4px;
+}
+/* Main call to action = the same dimensions as Export's Start Export. */
+#cgas-mini-widget .cgas-main-toggle{
+  width:100%;min-height:29px;padding:6px 8px;
+  border-radius:10px;font-size:11px;
+  background:rgba(96,165,250,.24);
+  color:#dbeafe;
+  border-color:rgba(147,197,253,.36);
+}
+/* Export selected range: BLUE, not mauve. Includes all Voice toggles. */
+#cgas-mini-widget .cgas-head-btn.on,
+#cgas-mini-widget .cgas-main-toggle.cgas-mini-active,
+#cgas-mini-widget #cgas-mini-tos-toggle.cgas-mini-tos-on,
+#cgas-mini-widget #cgas-mini-send-toggle.cgas-mini-send-on,
+#cgas-mini-widget #cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-on,
+#cgas-mini-widget #cgas-mini-readaloud.cgas-mini-readaloud-on{
+  background:rgba(96,165,250,.24);
+  color:#dbeafe;
+  border-color:rgba(147,197,253,.58);
+}
+#cgas-mini-widget #cgas-mini-tos-toggle.cgas-mini-tos-off,
+#cgas-mini-widget #cgas-mini-send-toggle.cgas-mini-send-off,
+#cgas-mini-widget #cgas-mini-trigger-readaloud.cgas-mini-trigger-readaloud-off,
+#cgas-mini-widget #cgas-mini-readaloud.cgas-mini-readaloud-off,
+#cgas-mini-widget #cgas-mini-platform-mode,
+#cgas-mini-widget #cgas-mini-start-readaloud{
+  background:rgba(255,255,255,.08);
+  color:#e5e7eb;
+  border-color:rgba(255,255,255,.18);
+}
+/* Export's Read/Start action is blue; Export's red Stop is PURPLE. */
+#cgas-mini-widget #cgas-mini-start-readaloud{
+  background:rgba(96,165,250,.24);color:#dbeafe;
+  border-color:rgba(147,197,253,.36);
+}
+#cgas-mini-widget #cgas-mini-stop-readaloud{
+  background:rgba(183,80,255,.22); /* Export red STOP -> purple */
+  color:#f1dcff;
+  border-color:rgba(183,80,255,.45);
+}
+#cgas-mini-widget #cgas-mini-stop-readaloud.cgas-mini-stop-readaloud-active{
+  background:rgba(183,80,255,.28);color:#f1dcff;
+  border-color:rgba(183,80,255,.60);
+}
+/* Export's small action buttons: 25px / 10px (manual Read Aloud). */
+#cgas-mini-widget #cgas-mini-readaloud-manual-row>.cgas-action{
+  min-height:25px;padding:4px 7px;border-radius:8px;font-size:10px;
+  line-height:1.25;
+}
+/* Export's text and neutral section surfaces. */
+#cgas-mini-widget :is(#cgas-mini-tos-box,#cgas-mini-readaloud-group){
+  background:rgba(255,255,255,.055);
+  border-color:rgba(255,255,255,.10);
+  border-radius:10px;
+}
+#cgas-mini-widget #cgas-mini-tos-title{
+  color:#93c5fd;font-size:10px;font-weight:900;
+}
+#cgas-mini-widget .cgas-mini-label{
+  color:#d1d5db;font-size:11px;font-weight:700;
+}
+/* Export's +/- buttons: same 28x27 geometry in Maxi, 21x21 in Mini. */
+#cgas-mini-widget .cgas-mini-row{
+  grid-template-columns:minmax(0,1fr) 28px 54px 28px;
+  gap:5px;
+}
+#cgas-mini-widget .cgas-mini-step{
+  min-width:28px;height:27px;padding:3px 6px;
+  border-radius:9px;font-size:11px;
+}
+#cgas-mini-widget .cgas-mini-value{
+  height:27px;min-width:0;
+  padding:3px 4px;
+  border-radius:9px;
+  background:rgba(96,165,250,.18);
+  border:1px solid rgba(96,165,250,.28);
+  color:#dbeafe;
+  font-size:11px;font-weight:900;
+  text-align:center;
+}
+#cgas-mini-widget #cgas-mini-vol-bar{
+  background:rgba(15,23,42,.92);
+  border-color:rgba(96,165,250,.20);
+}
+#cgas-mini-widget #cgas-mini-vol-fill{background:#60a5fa}
+#cgas-mini-widget #cgas-mini-vol-value{color:#dbeafe}
+#cgas-mini-widget #cgas-mini-platform-mode{
+  min-height:26px;padding:5px 7px;border-radius:9px;font-size:11px;
+}
+#cgas-mini-widget #cgas-mini-footer{
+  color:#dbeafe;font-size:7.5px;font-weight:900;
+  line-height:1.1;border-top-color:rgba(255,255,255,.10);
+  padding-top:3px;
+}
+#cgas-mini-widget #cgas-dev-title{
+  color:#bfdbfe;font-size:12px;font-weight:1000;
+}
+#cgas-mini-widget #cgas-dev-logs{
+  background:rgba(15,23,42,.92);
+  border:1px solid rgba(96,165,250,.20);
+  color:#cbd5e1;font-size:9px;
+  scrollbar-color:auto;
+}
+#cgas-mini-widget.cgas-mode-maxi .cgas-resize-se{
+  border-right-color:rgba(147,197,253,.50);
+  border-bottom-color:rgba(147,197,253,.50);
+}
+/* MINI: copy Export's 126px dimensions and typography exactly. */
+#cgas-mini-widget.cgas-mode-mini{
+  width:126px;padding:5px;border-radius:12px;
+}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-title{
+  font-size:9px;font-weight:1000;color:#e9c4ff; /* Export red title -> purple */
+}
+#cgas-mini-widget.cgas-mode-mini .cgas-main-toggle{
+  min-height:28px;border-radius:8px;font-size:10px;
+  background:rgba(96,165,250,.24);
+  color:#dbeafe;border-color:rgba(147,197,253,.36);
+}
+#cgas-mini-widget.cgas-mode-mini .cgas-action{
+  min-height:20px;padding:3px 2px;text-align:center;
+  font-size:7.5px;border-radius:7px;
+}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-readaloud-manual-row>.cgas-action{
+  min-height:20px;padding:3px 2px;font-size:7.5px;border-radius:7px;
+}
+#cgas-mini-widget.cgas-mode-mini .cgas-mini-label{
+  color:#a7f3d0;font-size:8px;font-weight:1000;
+}
+#cgas-mini-widget.cgas-mode-mini .cgas-mini-step{
+  min-width:21px;width:21px;height:21px;padding:0;border-radius:7px;font-size:10px;
+}
+#cgas-mini-widget.cgas-mode-mini .cgas-mini-value{
+  height:21px;padding:1px;border-radius:7px;font-size:9px;
+}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-status{
+  min-height:28px;max-height:28px;margin:3px 0 4px;
+  border-radius:7px;
+  background:rgba(37,99,235,.14);
+  border:1px solid rgba(96,165,250,.18);
+  color:#cbd5e1;
+  font-size:8px;font-weight:900;
+}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-platform-mode{
+  min-height:20px;padding:3px 2px;font-size:7.5px;border-radius:7px;
+}
+/* BUTTON: 62px shell, 54x44 inner, Export 13px V while keeping the
+ * original NOT ACTIVATED/ACTIVATED text as accessible button text. */
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle{
+  position:relative;
+  width:54px;height:44px;min-height:44px;padding:2px;
+  border:1px solid rgba(183,80,255,.96);
+  border-radius:9px;
+  background:rgba(12,18,28,.98);
+  color:transparent;
+  font-size:0;
+  font-weight:1000;
+  box-shadow:inset 0 0 0 1px rgba(183,80,255,.18),0 0 10px rgba(183,80,255,.18);
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle::after{
+  content:'V';position:absolute;inset:0;display:flex;
+  justify-content:center;align-items:center;
+  color:#e9c4ff; /* Export red button text -> purple */
+  font-size:13px;font-weight:1000;
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active{
+  background:rgba(96,165,250,.24); /* Export running BLUE unchanged */
+  border-color:rgba(183,80,255,.96);
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active::after{color:#dbeafe}
+
+
+/* ==========================================================================
+ * v8.11.02 — Export v7.0.0 p25 INTERACTION AND GEOMETRY CONTRACT
+ * Does not change any voice/transcription/ReadAloud or storage operation.
+ * - Slate gray idle; blue hover; blue persistent selected (clicked ON).
+ * - Red-only Export accents stay neon purple (outer border and STOP action).
+ * - Remove duplicate version/full-width profile button beneath Read Aloud.
+ * ========================================================================== */
+
+/* Export Maxi User is 326 px, Mini 126 px, Button 62 px.
+ * Developer 552 px remains explicitly resizable as in previous Voice versions. */
+#cgas-mini-widget.cgas-mode-maxi:not(.cgas-dev){width:326px;min-width:326px}
+#cgas-mini-widget.cgas-mode-maxi.cgas-dev{width:552px;min-width:326px}
+
+/* Main activation is a state toggle, NOT an always-blue Start Export command. */
+#cgas-mini-widget .cgas-main-toggle,
+#cgas-mini-widget.cgas-mode-mini .cgas-main-toggle,
+#cgas-mini-widget #cgas-mini-toggle:not(.cgas-mini-active){
+  background:rgba(255,255,255,.08);color:#e5e7eb;
+  border-color:rgba(255,255,255,.18);
+}
+#cgas-mini-widget #cgas-mini-toggle.cgas-mini-active{
+  background:rgba(96,165,250,.24);color:#dbeafe;
+  border-color:rgba(147,197,253,.58);
+}
+/* Gray buttons become blue on pointer hover, regardless of OFF or ON class.
+ * Specific IDs win over older class/ID declarations throughout this file. */
+#cgas-mini-widget #cgas-mini-toggle:hover,
+#cgas-mini-widget #cgas-mini-tos-toggle:hover,
+#cgas-mini-widget #cgas-mini-send-toggle:hover,
+#cgas-mini-widget #cgas-mini-trigger-readaloud:hover,
+#cgas-mini-widget #cgas-mini-readaloud:hover,
+#cgas-mini-widget #cgas-mini-start-readaloud:hover,
+#cgas-mini-widget #cgas-mini-platform-mode:hover,
+#cgas-mini-widget .cgas-mini-step:hover,
+#cgas-mini-widget .cgas-head-btn:hover{
+  background:rgba(96,165,250,.24);color:#dbeafe;
+  border-color:rgba(147,197,253,.58);
+}
+/* The last-message action is not already selected when no audio is playing. */
+#cgas-mini-widget #cgas-mini-start-readaloud{
+  background:rgba(255,255,255,.08);color:#e5e7eb;
+  border-color:rgba(255,255,255,.18);
+}
+#cgas-mini-widget #cgas-mini-start-readaloud.cgas-mini-start-readaloud-active{
+  background:rgba(96,165,250,.24);color:#dbeafe;
+  border-color:rgba(147,197,253,.58);
+}
+#cgas-mini-widget #cgas-mini-start-readaloud:hover{
+  background:rgba(96,165,250,.24);color:#dbeafe;
+  border-color:rgba(147,197,253,.58);
+}
+/* The Stop operation corresponds to Export's red STOP -> purple, no other
+ * Export blue/gray/green/amber color is remapped to purple. */
+#cgas-mini-widget #cgas-mini-stop-readaloud:hover{
+  background:rgba(183,80,255,.36);color:#fff0ff;
+  border-color:rgba(219,163,255,.75);
+}
+/* Keep all the initial buttons consistent with Export's normal range buttons. */
+#cgas-mini-widget .cgas-action{min-height:26px;padding:5px 7px;border-radius:9px;font-size:11px}
+#cgas-mini-widget .cgas-main-toggle{min-height:29px;padding:6px 8px;border-radius:10px;font-size:11px}
+#cgas-mini-widget.cgas-mode-mini .cgas-action{min-height:20px;padding:3px 2px;font-size:7.5px;border-radius:7px}
+#cgas-mini-widget.cgas-mode-mini .cgas-main-toggle{min-height:28px;padding:3px 2px;font-size:10px;border-radius:8px}
+
+/* The platform switch is still wired and present, but only in Developer header.
+ * Removes the unwanted ChatGPT/Claude FULL-WIDTH button underneath Read Aloud. */
+#cgas-mini-widget #cgas-mini-platform-mode{display:none;min-height:20px;height:20px;width:auto;min-width:36px;padding:0 6px;margin:0;border-radius:999px;font-size:10px;line-height:18px}
+#cgas-mini-widget.cgas-mode-maxi.cgas-dev #cgas-mini-platform-mode{display:inline-flex;align-items:center;justify-content:center}
+/* Maxi already shows v8.11.02 in its title; no duplicate below controls.
+ * Mini has no full title/version, so keep the small Export-style footer. */
+#cgas-mini-widget.cgas-mode-maxi #cgas-mini-footer{display:none!important}
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-footer{display:flex;justify-content:center}
+
+/* Preserve small Button mode: neon purple V, gray idle and blue running state. */
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle:not(.cgas-mini-active){
+  background:rgba(12,18,28,.98);color:transparent;border-color:rgba(183,80,255,.96)
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle.cgas-mini-active{
+  background:rgba(96,165,250,.24);color:transparent;border-color:rgba(183,80,255,.96)
+}
+#cgas-mini-widget.cgas-mode-button #cgas-mini-toggle:hover{
+  background:rgba(96,165,250,.24);border-color:rgba(183,80,255,.96)
+}
+
+
+/* ==========================================================================
+ * v8.11.03 — Mini status placement + dimensions from ChatGPT Export v7.0.0 p25.
+ * The SAME #cgas-mini-status node is relocated by updateWidget(), so setStatus()
+ * remains the only status writer and full messages survive in title tooltip.
+ * Maxi and Button CSS/positions are deliberately unchanged.
+ * ========================================================================== */
+#cgas-mini-widget.cgas-mode-mini #cgas-mini-status {
+  display:block;
+  flex:0 0 auto;
+  width:100%;
+  min-height:14px;
+  max-height:14px;
+  height:14px;
+  margin:4px 0 0;
+  padding:0 4px;
+  border-radius:7px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+  color:#cbd5e1;
+  text-align:center;
+  font-size:8px;
+  font-weight:900;
+  line-height:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  -webkit-line-clamp:unset;
+  -webkit-box-orient:initial;
+}
